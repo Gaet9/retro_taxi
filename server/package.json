@@ -1,0 +1,48 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "main": "app.js",
+    "scripts": {
+        "build:frontend": "cd ../client && npm run build",
+        "prod": "cross-env NODE_ENV=production node app.js",
+        "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --runInBand --watchAll --config ./jest.config.js",
+        "test:e2e": "node tests/e2e/e2e.js",
+        "install:all": "npm install && cd ../client && npm install && cd ../server/api",
+        "coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest --config ./jest.config.js --coverage",
+        "start": "node app.js",
+        "dev": "nodemon app.js",
+        "db:seed": "node scripts/seedDb.js",
+        "db:reset": "node scripts/seedDb.js",
+        "db:init": "node scripts/initDb.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "@faker-js/faker": "^9.8.0",
+        "bcrypt": "^6.0.0",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "dayjs": "^1.11.13",
+        "dotenv": "^16.6.1",
+        "express": "^4.18.2",
+        "fs": "^0.0.1-security",
+        "jsonwebtoken": "^9.0.2",
+        "morgan": "^1.10.0",
+        "node-fetch": "^2.7.0",
+        "nodemailer": "^7.0.5",
+        "nodemon": "^3.1.10",
+        "node-cron": "^4.2.1",
+        "pg": "^8.16.0",
+        "resend": "^4.7.0",
+        "validator": "^13.15.15"
+    },
+    "devDependencies": {
+        "chromedriver": "^139.0.1",
+        "cross-env": "^7.0.3",
+        "jest": "^30.0.5",
+        "selenium-webdriver": "^4.35.0",
+        "supertest": "^7.1.4"
+    }
+}
