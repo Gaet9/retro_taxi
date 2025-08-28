@@ -84,14 +84,9 @@ node server/api/tests/e2e/signupFlow.e2e.js
 
 ## 🤝 Contributing
 
--   Guidelines for pull requests
--   Coding style / naming conventions
-
 ---
 
 ## 📜 License
-
-Mention the license (MIT, Apache 2.0, etc.).
 
 ---
 
