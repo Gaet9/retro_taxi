@@ -23,7 +23,9 @@ Step-by-step instructions to set up locally:
 
 ```bash
 git clone https://github.com/Gaet9/retro-taxi.git
-cd <project-folder>
+cd client
+npm install
+cd ../server
 npm install
 ```
 
@@ -34,6 +36,7 @@ npm install
 Show how to run the project and basic usage examples:
 
 ```bash
+cd client/
 npm run dev
 ```
 
