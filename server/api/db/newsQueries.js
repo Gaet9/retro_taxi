@@ -101,10 +101,12 @@ const create_newsletter = async (req, res) => {
         }
 
         newsletter.user_id = 14; // or from req.user.id or similar
+        const S3_image_URL = "https://images-retrotaxi.s3.eu-north-1.amazonaws.com/";
+        const random = Math.floor(Math.random() * 27) + 1;
 
         // Store the newsletter content in the blogs table for later use
         await pool.query(
-            `INSERT INTO blogs (title, summary, content, category, model, brand, user_id, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            `INSERT INTO blogs (title, summary, content, category, model, brand, image_url, user_id, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
             [
                 `Retro Taxi – ${dayjs().format("MMMM D")}`,
                 newsletter.summary,
@@ -112,6 +114,7 @@ const create_newsletter = async (req, res) => {
                 newsletter.category,
                 newsletter.model,
                 newsletter.brand,
+                (newsletter.image_url = `${S3_image_URL}${random}.jpg`),
                 newsletter.user_id,
                 "draft",
             ]
@@ -143,9 +146,6 @@ const create_newsletter = async (req, res) => {
 
 const send_newsletter = async (req, res) => {
     const resend = new Resend(config.apiKeys.resend);
-
-    // Determine base URL based on environment
-    const baseUrl = process.env.NODE_ENV === "production" ? "https://retrotaxi.xyz" : "http://localhost:3000";
 
     try {
         // Get the latest published newsletter
@@ -319,7 +319,7 @@ const send_newsletter = async (req, res) => {
                                 <div class="subtitle">Autonomous Vehicle Industry Newsletter</div>
                                 <div class="date">${dayjs(newsletter.created_at).format("dddd, MMMM D YYYY")}</div>
                             </div>
-                            
+                          
                             <div class="summary-section">
                                 <div class="summary-title">This Week's Highlights</div>
                                 <div class="summary-text">${newsletter.summary}</div>

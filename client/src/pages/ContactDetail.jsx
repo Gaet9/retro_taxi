@@ -41,8 +41,8 @@ export const ContactDetail = () => {
                 <Navigation color='text-purple-950' />
                 <Header color='text-purple-950'>Contact Details</Header>
                 {NotificationElement}
-                <div className='flex justify-center m-2'>
-                    <div className='text-purple-950 text-xl'>Loading...</div>
+                <div className='flex justify-center m-2 sm:m-3 md:m-4 lg:m-5'>
+                    <div className='text-purple-950 text-lg sm:text-xl md:text-2xl'>Loading...</div>
                 </div>
             </div>
         );
@@ -53,39 +53,33 @@ export const ContactDetail = () => {
             <Navigation color='text-purple-950' />
             <Header color='text-purple-950'>Contact Form Details</Header>
             {NotificationElement}
-            <div className='flex justify-center m-2'>
+            <div className='flex justify-center m-2 sm:m-3 md:m-4 lg:m-5'>
                 <div
                     id='contactDetail-id'
-                    className='flex flex-col w-3/4 py-2
+                    className='flex flex-col w-2/3
                         rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
                         shadow-xl shadow-purple-950'>
-                    <div className='flex justify-between text-purple-950 text-2xl'>
-                        <div className='flex flex-col w-1/6'>
-                            <div
-                                className='flex justify-center p-1
-                                    bg-purple-950 text-butter
-                                    rounded-br-2xl'>
+                    {/* Header Section */}
+                    <div className='flex sm:flex-row justify-between text-purple-950 text-base sm:text-lg md:text-xl lg:text-2xl p-2 sm:p-3 md:p-4'>
+                        <div className='flex flex-col w-full sm:w-1/6'>
+                            <div className='flex justify-center p-1 bg-purple-950 text-butter rounded-br-2xl text-sm sm:text-base md:text-lg'>
                                 Contact
                             </div>
-                            <div
-                                className='flex w-2/3 p-1 bg-purple-950 text-butter 
-                                    rounded-br-2xl justify-center'>
-                                <i className='fa-solid fa-envelope'></i>
+                            <div className='flex w-2/3 p-1 bg-purple-950 text-butter rounded-br-2xl justify-center'>
+                                <i className='fa-solid fa-envelope text-sm sm:text-base md:text-lg'></i>
                             </div>
                         </div>
                         <div className='flex flex-row mt-2'>
                             <div
-                                className='flex w-fit max-h-10 p-2 mr-10 
-                                    items-center 
-                                    bg-purple-950 text-butter
-                                    rounded-2xl'>
+                                className='flex w-fit max-h-8 sm:max-h-10 p-2 mr-2 sm:mr-5 md:mr-8 lg:mr-10 
+                                items-center bg-purple-950 text-butter rounded-2xl text-xs sm:text-sm md:text-base'>
                                 {new Date().toLocaleDateString()}
                             </div>
                             <div>
                                 <Link
                                     to='/admin-dash'
                                     className='flex justify-center items-center 
-                                        px-3 py-1 mr-4 bg-red-300 text-purple-950 text-2xl
+                                        px-3 py-1 mr-4 bg-red-300 text-purple-950 text-lg sm:text-xl md:text-2xl
                                         shadow-xs shadow-purple-950
                                         rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
                                         cursor-pointer
@@ -97,50 +91,53 @@ export const ContactDetail = () => {
                         </div>
                     </div>
 
-                    {/* Contact Information Display */}
-                    <div className='flex flex-row'>
-                        <div className='flex flex-col w-1/4 m-5'>
-                            <div className='flex flex-col space-y-4'>
-                                <div className='bg-purple-950 text-butter border-4 border-purple-950 p-3 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl'>
-                                    <h3 className='text-lg mb-2'>Contact ID</h3>
-                                    <p className='text-xl'>{contact.id}</p>
-                                </div>
+                    {/* Contact Information Display - Using CSS Grid */}
+                    <div
+                        className='grid md:grid-cols-1 mt-5 lg:grid-cols-2 
+                                gap-4 sm:gap-6 md:gap-8 
+                                p-2 sm:p-3 md:p-4'>
+                        {/* First Column - Contact Details */}
+                        <div className='space-y-4 sm:space-y-6 md:space-y-8'>
+                            <div className='bg-purple-950 text-butter border-2 sm:border-3 md:border-4 border-purple-950 p-3 sm:p-4 md:p-5 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl'>
+                                <h3 className='text-sm sm:text-base md:text-lg lg:text-xl mb-2'>Contact ID</h3>
+                                <p className='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'>{contact.id}</p>
+                            </div>
 
-                                <div className='bg-purple-950 text-butter border-4 border-purple-950 p-3 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl'>
-                                    <h3 className='text-lg mb-2'>Name</h3>
-                                    <p className='text-xl'>{contact.name}</p>
-                                </div>
+                            <div className='bg-purple-950 text-butter border-2 sm:border-3 md:border-4 border-purple-950 p-3 sm:p-4 md:p-5 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl'>
+                                <h3 className='text-sm sm:text-base md:text-lg lg:text-xl mb-2'>Name</h3>
+                                <p className='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'>{contact.name}</p>
+                            </div>
 
-                                <div className='bg-purple-950 text-butter border-4 border-purple-950 p-3 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl'>
-                                    <h3 className='text-lg mb-2'>Email</h3>
-                                    <p className='text-md break-all'>{contact.email}</p>
-                                </div>
+                            <div className='bg-purple-950 text-butter border-2 sm:border-3 md:border-4 border-purple-950 p-3 sm:p-4 md:p-5 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl'>
+                                <h3 className='text-sm sm:text-base md:text-lg lg:text-xl mb-2'>Email</h3>
+                                <p className='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl break-all'>{contact.email}</p>
+                            </div>
 
-                                <div className='bg-purple-950 text-butter border-4 border-purple-950 p-3 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl'>
-                                    <h3 className='text-lg mb-2'>Submitted</h3>
-                                    <p className='text-xl'>{new Date(contact.submitted_at).toLocaleDateString()}</p>
-                                    <p className='text-sm opacity-75'>{new Date(contact.submitted_at).toLocaleTimeString()}</p>
-                                </div>
+                            <div className='bg-purple-950 text-butter border-2 sm:border-3 md:border-4 border-purple-950 p-3 sm:p-4 md:p-5 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl'>
+                                <h3 className='text-sm sm:text-base md:text-lg lg:text-xl mb-2'>Submitted</h3>
+                                <p className='text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl'>
+                                    {new Date(contact.submitted_at).toLocaleDateString()}
+                                </p>
+                                <p className='text-xs sm:text-sm opacity-75'>{new Date(contact.submitted_at).toLocaleTimeString()}</p>
                             </div>
                         </div>
 
-                        {/* Message Content */}
-                        <div className='flex flex-col w-3/4 m-5'>
-                            <div className='bg-butter text-purple-950 border-4 border-purple-950 p-4 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl h-full'>
-                                <h3 className='text-2xl mb-4'>Message</h3>
-                                <div className='bg-butter text-purple-950 p-4 rounded-lg h-64 overflow-y-auto'>
-                                    <p className='text-lg whitespace-pre-wrap'>{contact.message}</p>
-                                </div>
+                        {/* Second Column - Message Content */}
+                        <div className='bg-butter text-purple-950 border-2 sm:border-3 md:border-4 border-purple-950 p-3 sm:p-4 md:p-5 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl'>
+                            <h3 className='text-lg sm:text-xl md:text-2xl lg:text-3xl mb-4'>Message</h3>
+                            <div className='bg-butter text-purple-950 p-3 sm:p-4 rounded-lg min-h-[12rem] overflow-y-auto'>
+                                <p className='text-sm sm:text-base md:text-lg lg:text-xl whitespace-pre-wrap'>{contact.message}</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className='flex justify-end m-5'>
+                    <div className='flex justify-center lg:justify-end p-2 sm:p-3 md:p-4'>
                         <button
                             onClick={handleDelete}
                             className='flex justify-center items-center 
-                                px-6 py-2 mr-4 bg-red-600 text-butter text-xl
+                                px-4 sm:px-6 py-2 mr-4 bg-red-600 text-butter 
+                                text-sm sm:text-base md:text-lg lg:text-xl
                                 shadow-md shadow-purple-950
                                 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
                                 cursor-pointer

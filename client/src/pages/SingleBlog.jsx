@@ -4,11 +4,6 @@ import { Header } from "../components/Header";
 import { Link, useParams } from "react-router-dom";
 import { Navigation } from "../components/Navigation";
 import { Footer } from "@/components/Footer";
-import CruiseImg from "../assets/Cruise.jpg";
-import TeslaImg from "../assets/Tesla.jpg";
-import WaymoImg from "../assets/Waymo.jpg";
-import ZooxImg from "../assets/zoox.jpg";
-import BaiduImg from "../assets/baidu.jpg";
 
 export const SingleBlog = () => {
     const { id } = useParams();
@@ -20,14 +15,6 @@ export const SingleBlog = () => {
             .catch((err) => console.error("Failed to fetch blogs:", err));
     }, [id]);
 
-    const images = {
-        Tesla: TeslaImg,
-        Amazon: ZooxImg,
-        Google: WaymoImg,
-        GM: CruiseImg,
-        Baidu: BaiduImg,
-    };
-
     if (!blog) {
         return (
             <div className='min-h-screen bg-butter racing-font'>
@@ -38,8 +25,8 @@ export const SingleBlog = () => {
                         <div className='inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl mb-4'>
                             <i className='fa-solid fa-newspaper text-2xl text-purple-600'></i>
                         </div>
-                        <h3 className='text-lg font-semibold text-purple-900 mb-2'>Blog not found</h3>
-                        <p className='text-purple-600 mb-4'>Sorry, this blog doesn't exist</p>
+                        <h3 className='text-base sm:text-lg md:text-xl font-semibold text-purple-900 mb-2'>Blog not found</h3>
+                        <p className='text-sm sm:text-base md:text-lg text-purple-600 mb-4'>Sorry, this blog doesn't exist</p>
                         <Link
                             to='/blogs'
                             className='inline-flex items-center px-6 py-3 bg-purple-950 text-butter rounded-xl
@@ -57,70 +44,44 @@ export const SingleBlog = () => {
     return (
         <div className='min-h-screen bg-butter racing-font'>
             <Navigation color='text-purple-950' />
-            <Header color='text-purple-950'>Retro Taxi</Header>
+            <Header color='text-purple-950'>{blog.title}</Header>
 
             {/* Main Content Container */}
             <div className='container mx-auto px-6 py-8'>
                 <div className='max-w-6xl mx-auto'>
-                    {/* Blog Header Card */}
-                    <div className='bg-butter rounded-2xl shadow-lg shadow-purple-950/20 mb-8 overflow-hidden'>
-                        {/* Hero Image Section */}
-                        <div className='relative h-80 overflow-hidden'>
-                            <div
-                                className='w-full h-full bg-cover bg-center'
-                                style={{ backgroundImage: `url(${images[blog.brand] || images.Tesla})` }}
-                            />
-
-                            {/* Top Info Bar */}
-                            <div className='absolute top-0 left-0 right-0 p-6'>
-                                <div className='flex justify-between items-start'>
-                                    {/* Brand and Model */}
-                                    <div className='flex flex-col space-y-2'>
-                                        <div
-                                            className='inline-flex items-center px-10 py-2 bg-purple-950/90 text-butter text-xl  
-                                            rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                                            backdrop-blur-sm shadow-lg'>
-                                            {blog.brand || blog.title}
-                                        </div>
-                                        {blog.model && (
-                                            <div
-                                                className='inline-flex items-center px-10 py-2 bg-purple-800/80 text-butter text-xl 
-                                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl backdrop-blur-sm shadow-lg'>
-                                                {blog.model}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Close Button */}
-                                    <Link
-                                        to='/blogs'
-                                        className='inline-flex items-center justify-center w-10 h-10 bg-red-500/90 text-butter
-                                            rounded-bl-2xl rounded-tr-2xl rounded-br-3xl backdrop-blur-sm shadow-lg hover:bg-red-600 transform hover:scale-110 
-                                            transition-all duration-300 ease-out'>
-                                        <i className='fa-solid fa-times text-lg'></i>
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Title Section */}
-                        <div className='p-6'>
-                            <h1 className='text-3xl text-purple-950 leading-tight'>{blog.title}</h1>
-                        </div>
+                    {/* Close Button - Positioned above dates */}
+                    <div className='flex justify-end mb-4'>
+                        <Link
+                            to='/blogs'
+                            className='inline-flex items-center py-1 px-5 bg-red-500 text-butter
+                                        rounded-bl-2xl rounded-tr-2xl rounded-br-3xl backdrop-blur-sm shadow-lg
+                                        text-xs sm:text-sm md:text-md
+                                        hover:bg-red-600 transform hover:scale-110 hover:rounded-full
+                                        transition-all duration-300 ease-out'>
+                            <i className='fa-solid fa-arrow-left mr-3'></i>
+                            Back to blogs
+                        </Link>
                     </div>
-
                     {/* Info Bar - Between Title and Content */}
-                    <div className='bg-butter rounded-2xl shadow-lg shadow-purple-950/20 mb-8 p-4'>
+                    <div
+                        className='flex flex-row justify-center bg-butter 
+                                    rounded-2xl shadow-lg shadow-purple-950/20 
+                                    text-[9px] sm:text-sm md:text-md
+                                    mb-8 p-4'>
                         <div className='flex flex-wrap justify-center gap-4'>
                             <div
-                                className='inline-flex items-center px-4 py-2 bg-purple-950 text-butter text-lg 
+                                className='inline-flex items-center 
+                                px-4 py-2 bg-purple-950 text-butter 
+                                text-[9px] sm:text-sm md:text-md 
                                 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl shadow-lg'>
                                 <i className='fa-solid fa-calendar mr-2'></i>
                                 Published: {new Date(blog.created_at).toLocaleDateString()}
                             </div>
                             {blog.last_updated && (
                                 <div
-                                    className='inline-flex items-center px-4 py-2 bg-purple-800 text-butter text-lg 
+                                    className='inline-flex items-center 
+                                    px-4 py-2 bg-purple-800 text-butter 
+                                    text-[9px] sm:text-sm md:text-md 
                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl shadow-lg'>
                                     <i className='fa-solid fa-edit mr-2'></i>
                                     Updated: {new Date(blog.last_updated).toLocaleDateString()}
@@ -128,7 +89,9 @@ export const SingleBlog = () => {
                             )}
                             {blog.category && (
                                 <div
-                                    className='inline-flex items-center px-4 py-2 bg-purple-800 text-butter text-lg 
+                                    className='inline-flex items-center 
+                                    px-4 py-2 bg-purple-800 text-butter 
+                                    text-[9px] sm:text-sm md:text-md 
                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl shadow-lg'>
                                     <i className='fa-solid fa-tag mr-2'></i>
                                     {blog.category}
@@ -249,7 +212,7 @@ export const SingleBlog = () => {
                                                                 return (
                                                                     <h3
                                                                         key={lineIdx}
-                                                                        className='text-2xl font-semibold text-purple-800 mb-3 mt-4'>
+                                                                        className='text-lg sm:text-xl md:text-2xl font-semibold text-purple-800 mb-3 mt-4'>
                                                                         {text}
                                                                     </h3>
                                                                 );
@@ -259,7 +222,7 @@ export const SingleBlog = () => {
                                                                 return (
                                                                     <h1
                                                                         key={lineIdx}
-                                                                        className='text-4xl font-bold text-purple-900 mb-6 mt-8'>
+                                                                        className='text-2xl sm:text-3xl md:text-4xl font-bold text-purple-900 mb-6 mt-8'>
                                                                         {text}
                                                                     </h1>
                                                                 );
@@ -267,14 +230,18 @@ export const SingleBlog = () => {
                                                                 // Render list items with HTML support for links
                                                                 const text = line.replace(/^•\s*/, "");
                                                                 return (
-                                                                    <li key={lineIdx} className='ml-6 mb-2 list-disc'>
+                                                                    <li
+                                                                        key={lineIdx}
+                                                                        className='ml-6 mb-2 list-disc text-sm sm:text-base md:text-lg'>
                                                                         <span dangerouslySetInnerHTML={{ __html: text }} />
                                                                     </li>
                                                                 );
                                                             } else if (line.trim()) {
                                                                 // Render regular text
                                                                 return (
-                                                                    <p key={lineIdx} className='mb-3 leading-relaxed'>
+                                                                    <p
+                                                                        key={lineIdx}
+                                                                        className='mb-3 leading-relaxed text-sm sm:text-base md:text-lg'>
                                                                         {line}
                                                                     </p>
                                                                 );
@@ -294,9 +261,9 @@ export const SingleBlog = () => {
                     <div className='text-center mt-8'>
                         <Link
                             to='/blogs'
-                            className='inline-flex items-center px-8 py-4 bg-purple-800 text-butter text-lg
+                            className='inline-flex items-center px-8 py-4 bg-red-500 text-butter text-sm sm:text-base md:text-lg
                                 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl 
-                                shadow-lg shadow-purple-950/20 hover:shadow-2xl hover:shadow-purple-950
+                                shadow-lg shadow-purple-950/20 hover:shadow-2xl hover:shadow-purple-950 hover:bg-red-600
                                 hover:rounded-full transition-all duration-300 ease-out'>
                             <i className='fa-solid fa-arrow-left mr-3'></i>
                             Back to All Blogs

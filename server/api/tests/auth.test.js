@@ -20,7 +20,7 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-    jest.clearAllMocks;
+    jest.clearAllMocks();
     jest.restoreAllMocks(); // reset mock calls before each test
 });
 

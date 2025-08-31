@@ -51,25 +51,25 @@ export const Login = () => {
     };
 
     return (
-        <div className='bg-butter bg-cover h-screen racing-font overflow-y-auto overflow-x-hidden'>
+        <div className='bg-butter bg-cover h-screen racing-font overflow-y-auto overflow-x-hidden justify-center'>
             <Navigation />
             <Header color='text-purple-950'>Login</Header>
             {NotificationElement}
-            <div className='flex justify-center m-5'>
+            <div className='flex justify-center m-2 sm:m-3 md:m-4 lg:m-5 max-w-7xl mx-auto'>
                 <form
                     data-testid='login-form'
                     id='login-form-id'
                     onSubmit={handleSubmit}
-                    className='flex flex-col w-2/3
+                    className='flex flex-col w-3/4 sm:w-4/5 md:w-3/4 lg:w-2/3
                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
                     shadow-xl shadow-purple-950'>
-                    <div className='flex justify-between text-purple-950 text-2xl'>
+                    <div className='flex justify-between text-purple-950 text-lg sm:text-xl md:text-2xl'>
                         <div className='flex flex-col w-1/5'>
                             <div
-                                className='flex p-1 pl-3
+                                className='flex p-1 px-3
                                 bg-purple-950 text-butter
                                 rounded-br-2xl'>
-                                Login Form
+                                Login
                             </div>
                             <div
                                 className='flex w-2/3 p-1 bg-purple-950 text-butter 
@@ -79,8 +79,8 @@ export const Login = () => {
                         </div>
                     </div>
                     <div className='flex flex-row justify-center'>
-                        <div className='flex flex-col m-5 w-2/3'>
-                            <div className='relative m-5 group'>
+                        <div className='flex flex-col mt-5 m-2 sm:m-3 md:m-4 lg:m-5 w-full sm:w-4/5 md:w-3/4 lg:w-2/3'>
+                            <div className='relative m-2 sm:m-3 md:m-4 lg:m-5 group'>
                                 <input
                                     type='email'
                                     data-testid='email-input'
@@ -89,17 +89,19 @@ export const Login = () => {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className='flex justify-center items-center
-                                text-xl text-purple-950
-                                w-full h-15 px-15
-                                border-4 border-purple-950
+                                text-base sm:text-lg md:text-xl text-purple-950
+                                w-full h-12 sm:h-14 md:h-15 px-10 sm:px-15
+                                border-2 sm:border-3 md:border-4 border-purple-950
                                 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
                                 focus:border-purple-400 focus:scale-105
                                 transition-all duration-200 ease-in-out'
                                 />
-                                <label className='absolute -top-7 left-O text-md text-purple-950'>Email</label>
-                                <i className='absolute left-5 top-7 fa-solid fa-at fa-xl px-1 text-purple-950 transition-all duration-200 ease-in-out group-focus-within:-translate-x-3'></i>
+                                <label className='absolute -top-6 sm:-top-7 left-0 text-sm sm:text-base md:text-md text-purple-950'>
+                                    Email
+                                </label>
+                                <i className='absolute left-3 sm:left-4 md:left-5 top-6 sm:top-7 fa-solid fa-at fa-lg sm:fa-xl px-1 text-purple-950 transition-all duration-200 ease-in-out group-focus-within:-translate-x-3'></i>
                             </div>
-                            <div className='relative m-5 group'>
+                            <div className='relative mt-5 m-2 sm:m-3 md:m-4 lg:m-5 group'>
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     placeholder='Password'
@@ -108,30 +110,32 @@ export const Login = () => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className='flex justify-center items-center
-                                text-xl text-purple-950
-                                w-full h-15 px-15
-                                border-4 border-purple-950
+                                text-base sm:text-lg md:text-xl text-purple-950
+                                w-full h-12 sm:h-14 md:h-15 px-10 sm:px-15
+                                border-2 sm:border-3 md:border-4 border-purple-950
                                 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
                                 focus:border-purple-400 focus:scale-105
                                 transition-all duration-200 ease-in-out'
                                 />
-                                <label className='absolute -top-7 left-O text-md text-purple-950'>Password</label>
-                                <i className='absolute left-5 top-7 fa-solid fa-key fa-xl px-1 text-purple-950 transition-all duration-200 ease-in-out group-focus-within:-translate-x-3'></i>
+                                <label className='absolute -top-6 sm:-top-7 left-0 text-sm sm:text-base md:text-md text-purple-950'>
+                                    Password
+                                </label>
+                                <i className='absolute left-3 sm:left-4 md:left-5 top-6 sm:top-7 fa-solid fa-key fa-lg sm:fa-xl px-1 text-purple-950 transition-all duration-200 ease-in-out group-focus-within:-translate-x-3'></i>
                                 <button
                                     type='button'
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className='absolute right-5 top-5 text-purple-950 hover:text-purple-800 transition-all duration-200 ease-in-out group-focus-within:translate-x-3'>
+                                    className='absolute right-3 sm:right-4 md:right-5 top-4 sm:top-5 text-purple-950 hover:text-purple-800 transition-all duration-200 ease-in-out group-focus-within:translate-x-3'>
                                     <i className={`fa-solid ${showPassword ? "fa-eye" : "fa-eye-slash"} fa-lg`}></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <div className='flex justify-end'>
+                    <div className='flex flex-col sm:flex-row justify-center sm:justify-end gap-2 sm:gap-0'>
                         <div
-                            className='flex flex-row gap-2
+                            className='flex flex-row gap-2 mx-auto
                                         text-purple-950
                                         justify-center items-center
-                                        w-1/4 h-10 mb-3 text-md'>
+                                        w-3/4 sm:w-1/4 h-10 mb-3 text-sm sm:text-base md:text-md'>
                             <p>Don't have an account?</p>
                             <Link
                                 to={"/sign-up"}
@@ -146,8 +150,8 @@ export const Login = () => {
                             type='submit'
                             id='submitLogin-btn-id'
                             disabled={!isFormValid}
-                            className={`flex justify-center items-center 
-                        w-1/4 h-10 mb-3 mr-10 ml-10 text-2xl 
+                            className={`flex justify-center items-center mx-auto
+                        w-3/4 sm:w-1/4 h-10 mb-3 sm:mr-10 sm:ml-10 text-lg sm:text-xl md:text-2xl 
                         text-butter 
                         shadow-xs shadow-purple-950
                         rounded-bl-2xl rounded-tr-2xl rounded-br-3xl

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Navigation } from "../components/Navigation";
 import { fetchBlogs, deleteBlogApi } from "../api/blogs";
-import { fetchUsers, deleteUserApi, updateUserRole, updateUserNewsletter, approveAdminRequest, denyAdminRequest } from "../api/users";
+import { fetchUsers, updateUserRole, updateUserNewsletter, approveAdminRequest, denyAdminRequest } from "../api/users";
 import { fetchContact, deleteContact } from "../api/contact";
 import { SendNewsletter } from "../api/newsletter";
 import { useNotification } from "../components/Notification";
@@ -24,7 +24,6 @@ export const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [contacts, setContacts] = useState([]);
     const [selectedBlog, setSelectedBlog] = useState(null);
-    const [selectedUser, setSelectedUser] = useState(null);
     const [selectedContact, setSelectedContact] = useState(null);
 
     // Notification component
@@ -137,76 +136,83 @@ export const AdminDashboard = () => {
     };
 
     return (
-        <div className='bg-butter h-screen racing-font overflow-y-auto overflow-x-hidden'>
+        <div
+            className='bg-butter min-h-screen racing-font 
+                        overflow-y-auto overflow-x-hidden
+                        px-2 py-1'>
             <Navigation color='text-purple-950' />
             <Header color='text-purple-950'>Admin Dashboard</Header>
             {NotificationElement}
+
             {/* Statistics window */}
-            <div className='flex justify-center'>
+            <div className='flex justify-center mb-3'>
                 <div
-                    className='flex flex-col w-3/4 m-5
-                        rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                        shadow-xl shadow-purple-950'>
+                    className='flex flex-col w-full lg:w-3/4
+                        text-xs md:text-md lg:text-xl xl:text-2xl
+                        rounded-lg rounded-bl-xl rounded-tr-xl rounded-br-2xl
+                        shadow-lg shadow-purple-950'>
                     {/* Top left corner of the window */}
-                    <div className='flex justify-between text-purple-950 text-2xl'>
+                    <div
+                        className='flex justify-between text-purple-950 p-1
+                                    sm:text-xs md:text-md lg:text-lg xl:text-xl'>
                         <div className='flex flex-col'>
                             <div
-                                className='flex px-2
+                                className='flex px-2 py-1
                                     bg-purple-950 text-butter
-                                    rounded-br-2xl'>
+                                    rounded-br-lg'>
                                 General
                             </div>
                             <div
-                                className='flex w-1/2 justify-center p-2 bg-purple-950 text-butter 
-                                    rounded-br-2xl'>
+                                className='flex w-1/2 justify-center p-1 bg-purple-950 text-butter 
+                                    rounded-br-lg'>
                                 {/* Icon */}
-                                <i className='fa-solid fa-chart-simple'></i>
+                                <i className='fa-solid fa-chart-simple '></i>
                             </div>
                         </div>
                     </div>
                     {/* Table headers */}
                     <div
-                        className='flex justify-evenly ml-20
-                            -mt-5 text-butter text-xl'>
+                        className='flex justify-evenly ml-4 -mt-2 text-butter gap-1
+                                    sm:text-xs md:text-md lg:text-lg xl:text-xl'>
                         <div
-                            className='flex w-1/5 max-h-10 justify-center items-center m-1 p-1 bg-purple-950
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                                shadow-md shadow-purple-950'>
+                            className='flex w-1/3 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
+                                shadow-md shadow-purple-950 '>
                             Blogs published
                         </div>
                         <div
-                            className='flex w-1/5 max-h-10 justify-center items-center m-1 p-1 bg-purple-950
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                                shadow-md shadow-purple-950'>
+                            className='flex w-1/3 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
+                                shadow-md shadow-purple-950 '>
                             Blogs pending
                         </div>
                         <div
-                            className='flex w-1/5 max-h-10 justify-center items-center m-1 p-1 bg-purple-950
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                                shadow-md shadow-purple-950'>
+                            className='flex w-1/3 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
+                                shadow-md shadow-purple-950 '>
                             Users
                         </div>
                     </div>
                     {/* Table first line */}
                     <div
-                        className='flex justify-evenly ml-20 mb-5
-                            text-butter text-xl'>
+                        className='flex justify-evenly ml-4 mb-2 text-butter gap-1
+                                    sm:text-xs md:text-md lg:text-lg xl:text-xl'>
                         <div
-                            className='flex w-1/5 max-h-10 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                                shadow-md shadow-purple-950'>
+                            className='flex w-1/3 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
+                                shadow-md shadow-purple-950 '>
                             {blogs.filter((blog) => blog.status === "published").length}
                         </div>
                         <div
-                            className='flex w-1/5 max-h-10 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                                shadow-md shadow-purple-950'>
+                            className='flex w-1/3 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
+                                shadow-md shadow-purple-950 '>
                             {blogs.filter((blog) => blog.status === "draft").length}
                         </div>
                         <div
-                            className='flex w-1/5 max-h-10 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                                shadow-md shadow-purple-950'>
+                            className='flex w-1/3 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
+                                shadow-md shadow-purple-950 '>
                             {users.length}
                         </div>
                     </div>
@@ -219,25 +225,29 @@ export const AdminDashboard = () => {
                 console.log("Admin requests length:", adminRequests.length);
                 return adminRequests.length > 0;
             })() && (
-                <div className='flex justify-center'>
+                <div className='flex justify-center mb-3'>
                     <div
-                        className='flex flex-col w-3/4 h-auto m-5 text-md pb-5
-                             rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                             shadow-xl shadow-purple-950'>
+                        className='flex flex-col w-full lg:w-3/4
+                            sm:text-xs md:text-md lg:text-lg xl:text-xl 
+                            h-auto pb-2
+                            rounded-lg rounded-bl-xl rounded-tr-xl rounded-br-2xl
+                            shadow-lg shadow-purple-950'>
                         {/* Top left corner of the window */}
-                        <div className='flex justify-between text-purple-950 text-2xl'>
+                        <div
+                            className='flex justify-between text-purple-950 p-1
+                                    sm:text-xs md:text-md lg:text-lg xl:text-xl'>
                             <div className='flex flex-col'>
                                 <div
-                                    className='flex justify-center w-fit px-2
+                                    className='flex justify-center w-fit px-2 py-1
                                          bg-purple-950 text-butter
-                                         rounded-br-2xl'>
+                                         rounded-br-lg '>
                                     Pending Admin Requests
                                 </div>
                                 <div
                                     className='flex w-1/2 justify-center p-1 bg-purple-950 text-butter 
-                                         rounded-br-2xl'>
+                                         rounded-br-lg'>
                                     {/* Icon */}
-                                    <i className='fa-solid fa-user-shield'></i>
+                                    <i className='fa-solid fa-user-shield '></i>
                                 </div>
                             </div>
                         </div>
@@ -247,41 +257,42 @@ export const AdminDashboard = () => {
                             .map((user) => (
                                 <div
                                     key={user.id}
-                                    className='flex justify-evenly py-2
-                                 text-butter'>
+                                    className='flex justify-evenly py-1 text-butter gap-1
+                                text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg
+                                '>
                                     <div
-                                        className='flex w-1/6 max-h-10 justify-center items-center m-1 p-3 bg-purple-950 opacity-50
-                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                        className='flex w-1/4 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950 opacity-50
+                                     rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                      shadow-md shadow-purple-950'>
-                                        <h1>{user.name}</h1>
+                                        <h1 className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>{user.name}</h1>
                                     </div>
                                     <div
-                                        className='flex w-1/4 max-h-10 justify-center items-center m-1 p-1 bg-pink-800 opacity-50
-                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                        className='flex w-1/3 max-h-6 justify-center items-center m-1 p-1 py-1 bg-pink-800 opacity-50
+                                     rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                      shadow-md shadow-purple-950'>
-                                        {user.email}
+                                        <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>{user.email}</span>
                                     </div>
                                     <div
-                                        className='flex w-1/6 max-h-10 justify-center items-center m-1 p-1 bg-yellow-600 opacity-50
-                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                        className='flex w-1/4 max-h-6 justify-center items-center m-1 p-1 py-1 bg-yellow-600 opacity-50
+                                     rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                      shadow-md shadow-purple-950'>
-                                        Pending Approval
+                                        <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>Pending</span>
                                     </div>
                                     <button
                                         onClick={() => handleApproveAdmin(user.id)}
-                                        className='flex w-1/6 max-h-10 justify-center items-center m-1 p-1 bg-emerald-600
-                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                        className='flex w-1/6 max-h-6 justify-center items-center m-1 p-1 py-1 bg-emerald-600
+                                     rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                      shadow-md shadow-purple-950
                                      hover:scale-105 transition-all duration-200 ease-in-out cursor-pointer'>
-                                        Approve
+                                        <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>✓</span>
                                     </button>
                                     <button
                                         onClick={() => handleDenyAdmin(user.id)}
-                                        className='flex w-1/6 max-h-10 justify-center items-center m-1 p-1 bg-red-600
-                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                        className='flex w-1/6 max-h-6 justify-center items-center m-1 p-1 py-1 bg-red-600
+                                     rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                      shadow-md shadow-purple-950
                                      hover:scale-105 transition-all duration-200 ease-in-out cursor-pointer'>
-                                        Deny
+                                        <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>✗</span>
                                     </button>
                                 </div>
                             ))}
@@ -289,80 +300,86 @@ export const AdminDashboard = () => {
                 </div>
             )}
             {/* Manage users */}
-            <div className='flex justify-center'>
+            <div className='flex justify-center mb-3'>
                 <div
-                    className='flex flex-col w-3/4 h-auto m-5 text-md pb-5
-                        rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                        shadow-xl shadow-purple-950'>
+                    className='flex flex-col w-full lg:w-3/4
+                        h-auto pb-2
+                        rounded-lg rounded-bl-xl rounded-tr-xl rounded-br-2xl
+                        shadow-lg shadow-purple-950'>
                     {/* Top left corner of the window */}
-                    <div className='flex justify-between text-purple-950 text-2xl'>
+                    <div
+                        className='flex justify-between text-purple-950 p-1
+                    text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
                         <div className='flex flex-col'>
                             <div
-                                className='flex justify-center w-fit px-2
+                                className='flex justify-center w-fit px-2 py-1
                                     bg-purple-950 text-butter
-                                    rounded-br-2xl'>
+                                    rounded-br-lg '>
                                 User management
                             </div>
                             <div
                                 className='flex w-1/2 justify-center p-1 bg-purple-950 text-butter 
-                                    rounded-br-2xl'>
+                                    rounded-br-lg'>
                                 {/* Icon */}
-                                <i className='fa-solid fa-gears'></i>
+                                <i className='fa-solid fa-gears '></i>
                             </div>
                         </div>
-                        <div className='flex flex-row my-2'></div>
+                        <div className='flex flex-row my-1'></div>
                     </div>
-                    {/* List of articles */}
+                    {/* List of users */}
                     {users.map((user) => (
-                        <div
-                            key={user.id}
-                            className='flex justify-around py-0.5
-                            text-butter'>
+                        <div key={user.id} className='flex justify-center text-butter gap-1'>
                             <div
-                                className='flex w-1/12 max-h-10 justify-center items-center m-1 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-1/12 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950'>
-                                <h1>id : {user.id}</h1>
+                                <h1 className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>id:{user.id}</h1>
                             </div>
                             <div
-                                className='flex w-1/6 max-h-10 justify-center items-center m-1 p-2 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-1/6 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950'>
-                                <h1>{user.name}</h1>
+                                <h1 className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>{user.name}</h1>
                             </div>
                             <div
-                                className='flex w-1/6 max-h-10 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-1/6 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950'>
-                                Since: {new Date(user.createdat).toLocaleDateString()}
+                                <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
+                                    {new Date(user.createdat).toLocaleDateString()}
+                                </span>
                             </div>
                             <div
-                                className='flex w-1/4 max-h-10 justify-center items-center m-1 p-1 bg-pink-800 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-1/6 max-h-6 justify-center items-center m-1 px-2 py-1 bg-pink-800 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950'>
-                                {user.email}
+                                <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
+                                    {user.email.length > 10 ? `${user.email.substring(0, 10)}...` : user.email}
+                                </span>
                             </div>
                             <button
                                 onClick={() => handleNewsletterChange(user.id, !user.newsletter)}
-                                className={`flex w-fit max-h-10 justify-center items-center m-1 px-5
-                                            rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className={`flex w-1/12 max-h-6 justify-center items-center m-1 px-1 py-1
+                                            rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                             shadow-md shadow-purple-950
                                             hover:scale-105 transition-all duration-200 ease-in-out cursor-pointer
                                             ${user.newsletter ? "bg-emerald-600" : "bg-red-500"}`}>
-                                {user.newsletter ? "Subscribed" : "Not Subscribed"}
+                                <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
+                                    {user.newsletter ? "Sub" : "Not"}
+                                </span>
                             </button>
                             <div
-                                className={`flex w-1/12 max-h-10 justify-center items-center m-1 p-1
+                                className={`flex w-1/6 max-h-6 justify-center items-center m-1 p-1 py-1
                                 ${user.role === "admin" ? "bg-emerald-600 opacity-50" : "bg-purple-800 opacity-50"}
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950`}>
                                 <select
                                     value={user.role}
                                     onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                    className='w-full h-full bg-transparent text-butter text-center border-none outline-none cursor-pointer
-                                        focus:ring-2 focus:ring-butter focus:ring-opacity-50 rounded
-                                        transition-all duration-200 ease-in-out'
-                                    style={{ fontSize: "inherit" }}>
+                                    className='w-full h-10 bg-transparent text-butter text-center border-none outline-none cursor-pointer
+                                    text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg    
+                                    focus:ring-2 focus:ring-butter focus:ring-opacity-50 rounded
+                                        transition-all duration-200 ease-in-out '>
                                     <option value='user' className='bg-purple-800 text-butter'>
                                         User
                                     </option>
@@ -374,49 +391,33 @@ export const AdminDashboard = () => {
                         </div>
                     ))}
                 </div>
-                {/* Confirm window from shadcn */}
-                {selectedUser && (
-                    <AlertDialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. It will permanently delete this user and remove its informations from the
-                                    database.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel onClick={() => setSelectedUser(null)}>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDeleteUser(selectedUser)}>Confirm</AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                )}
             </div>
 
             {/* Manage articles window */}
             <div className='flex justify-center'>
                 <div
-                    className='flex flex-col w-3/4 h-auto m-5 text-md
-                        rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                        shadow-xl shadow-purple-950'>
+                    className='flex flex-col w-full lg:w-3/4 h-auto 
+                        rounded-lg rounded-bl-xl rounded-tr-xl rounded-br-2xl
+                        shadow-lg shadow-purple-950'>
                     {/* Top left corner of the window */}
-                    <div className='flex justify-between text-purple-950 text-2xl'>
+                    <div
+                        className='flex justify-between text-purple-950 p-1
+                    text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
                         <div className='flex flex-col'>
                             <div
-                                className='flex justify-center w-fit px-2
+                                className='flex justify-center w-fit px-2 py-1
                                     bg-purple-950 text-butter
-                                    rounded-br-2xl'>
+                                    rounded-br-lg '>
                                 Blog management
                             </div>
                             <div
                                 className='flex w-1/2 justify-center p-1 bg-purple-950 text-butter 
-                                    rounded-br-2xl'>
+                                    rounded-br-lg'>
                                 {/* Icon */}
-                                <i className='fa-solid fa-gears'></i>
+                                <i className='fa-solid fa-gears '></i>
                             </div>
                         </div>
-                        <div className='flex flex-row mt-2'></div>
+                        <div className='flex flex-row mt-1'></div>
                     </div>
                     {/* List of articles */}
                     <div id='listOfBlogs-id'>
@@ -424,45 +425,48 @@ export const AdminDashboard = () => {
                             <div
                                 key={blog.id}
                                 id={blog.id}
-                                className='flex justify-evenly py-0.5
-                                text-butter'>
+                                className='flex justify-evenly text-butter text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg my-1'>
                                 <div
-                                    className='flex w-1/6 max-h-10 justify-center items-center m-1 p-3 bg-purple-950 opacity-50
-                                    rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                    className='flex w-1/6 max-h-6 justify-center items-center m-1 p-2 bg-purple-950 opacity-50
+                                    rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                     shadow-md shadow-purple-950'>
-                                    <h1>{blog.brand ? blog.brand : blog.title}</h1>
+                                    <h1 className='text-[8px] sm:text-[8px] md:text-sm lg:text-sm'>
+                                        {blog.brand ? blog.brand : blog.title}
+                                    </h1>
                                 </div>
                                 <div
-                                    className='flex w-1/6 max-h-10 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
-                                    rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                    className='flex w-1/6 max-h-6 justify-center items-center m-1 p-1 py-1 bg-purple-950 opacity-50
+                                    rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                     shadow-md shadow-purple-950'>
-                                    Created on : {new Date(blog.created_at).toLocaleDateString()}
+                                    <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
+                                        {new Date(blog.created_at).toLocaleDateString()}
+                                    </span>
                                 </div>
                                 <div
-                                    className={`flex w-1/6 max-h-10 justify-center items-center m-1 p-1
+                                    className={`flex w-1/6 max-h-6 justify-center items-center m-1 p-1 py-1
                                     ${blog.status === "published" ? "bg-purple-800 opacity-50" : "bg-emerald-600 opacity-50"}
-                                    rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                    rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                     shadow-md shadow-purple-950`}>
-                                    {blog.status}
+                                    <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>{blog.status}</span>
                                 </div>
                                 <Link
                                     to={`/update-blog/${blog.id}`}
-                                    className='flex w-1/6 max-h-10 justify-center items-center m-1 p-1 bg-cyan-600
-                                    rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                    className='flex w-fit max-h-6 justify-center items-center m-1 px-5 py-1 bg-cyan-600
+                                    rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                     shadow-md shadow-purple-950
                                     hover:rounded-full hover:shadow-2xl hover:cursor-pointer hover:bg-blue-600
                                     transition-all duration-200 ease-in-out'>
-                                    Modify
+                                    <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>Modify</span>
                                 </Link>
                                 <button
                                     aria-label={`delete-blog-${blog.id}`}
                                     onClick={() => setSelectedBlog(blog.id)}
-                                    className='flex w-1/6 max-h-10 justify-center items-center m-1 p-1 bg-red-300
-                                    rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                    className='flex w-fit max-h-6 justify-center items-center m-1 px-5 py-1 bg-red-300
+                                    rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                     shadow-md shadow-purple-950
                                     hover:rounded-full hover:shadow-2xl hover:cursor-pointer hover:bg-red-600
                                     transition-all duration-200 ease-in-out'>
-                                    Delete
+                                    <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>Delete</span>
                                 </button>
                             </div>
                         ))}
@@ -489,116 +493,121 @@ export const AdminDashboard = () => {
                     <div
                         className='flex justify-evenly 
                             h-0.5 bg-purple-800 opacity-50 
-                            m-5'></div>
+                            m-2'></div>
                     {/* Create new blog button */}
-                    <div className='flex justify-between items-center m-5'>
+                    <div className='flex justify-between items-center m-2'>
                         <button
                             onClick={handleSendNewsletter}
                             className='flex justify-center items-center 
-                                px-6 py-2 text-xl 
+                                px-2 py-1 m-2 w-1/3
                                 bg-gradient-to-r from-blue-600 to-purple-600 text-white
                                 shadow-lg shadow-purple-950
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl cursor-pointer
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl cursor-pointer
                                 hover:shadow-2xl hover:scale-105 hover:from-blue-700 hover:to-purple-700 hover:rounded-full
                                 transition-all duration-300 ease-out'>
-                            <i className='fa-solid fa-paper-plane mr-2'></i>
-                            Send Newsletter
+                            <i className='fa-solid fa-paper-plane mr-1 text-[9px]'></i>
+                            <span className='text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>Send Newsletter</span>
                         </button>
 
                         <Link
                             to='/new-blog'
                             id='goToNewblog-btn-id'
-                            className='flex justify-center items-center w-1/4 py-2
-                                bg-purple-800 text-xl text-butter
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                            className='flex justify-center items-center w-1/3 py-1 m-2
+                                bg-purple-800 text-butter
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950
                                 hover:rounded-full hover:shadow-2xl hover:cursor-pointer
                                 transition-all duration-200 ease-in-out'>
-                            Create a new article
+                            <span className='text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>Create a new article</span>
                         </Link>
                     </div>
                 </div>
             </div>
 
             {/* Contact Form Management Section */}
-            <div className='flex justify-center'>
+            <div className='flex justify-center mb-3'>
                 <div
-                    className='flex flex-col w-3/4 h-auto m-5 text-md pb-5
-                        rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
-                        shadow-xl shadow-purple-950'>
+                    className='flex flex-col w-full lg:w-3/4 h-auto pb-2
+                        rounded-lg rounded-bl-xl rounded-tr-xl rounded-br-2xl
+                        shadow-lg shadow-purple-950'>
                     {/* Top left corner of the window */}
-                    <div className='flex justify-between text-purple-950 text-2xl'>
+                    <div
+                        className='flex justify-between text-purple-950 p-1
+                    text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
                         <div className='flex flex-col'>
                             <div
-                                className='flex justify-center w-fit px-2
+                                className='flex justify-center w-fit px-2 py-1
                                     bg-purple-950 text-butter
-                                    rounded-br-2xl'>
+                                    rounded-br-lg '>
                                 Contact Form Management
                             </div>
                             <div
                                 className='flex w-1/2 justify-center p-1 bg-purple-950 text-butter 
-                                    rounded-br-2xl'>
+                                    rounded-br-lg'>
                                 {/* Icon */}
-                                <i className='fa-solid fa-envelope'></i>
+                                <i className='fa-solid fa-envelope '></i>
                             </div>
                         </div>
-                        <div className='flex flex-row my-2'></div>
+                        <div className='flex flex-row my-1'></div>
                     </div>
                     {/* List of contact forms */}
                     {contacts.map((contact) => (
-                        <div
-                            key={contact.id}
-                            className='flex justify-evenly py-0.5
-                            text-butter'>
+                        <div key={contact.id} className='flex justify-center text-butter'>
                             <div
-                                className='flex w-1/12 max-h-10 justify-center items-center m-1 p-3 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-1/12 max-h-6 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950'>
-                                <h1>id : {contact.id}</h1>
+                                <h1 className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>id: {contact.id}</h1>
                             </div>
                             <div
-                                className='flex w-1/12 max-h-10 justify-center items-center m-1 p-3 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-1/6 max-h-6 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950'>
-                                <h1>{contact.name}</h1>
+                                <h1 className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>{contact.name}</h1>
                             </div>
                             <div
-                                className='flex w-1/4 max-h-10 justify-center items-center m-1 p-1 bg-pink-800 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-1/6 max-h-6 justify-center items-center m-1 p-1 bg-pink-800 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950'>
-                                {contact.email}
+                                <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
+                                    {contact.email.length > 10 ? `${contact.email.substring(0, 10)}...` : contact.email}
+                                </span>
                             </div>
                             <div
-                                className='flex w-1/12 max-h-10 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-1/6 max-h-6 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950'>
-                                {new Date(contact.submitted_at).toLocaleDateString()}
+                                <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
+                                    {new Date(contact.submitted_at).toLocaleDateString()}
+                                </span>
                             </div>
                             <div
-                                className='flex w-1/4 max-h-10 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-1/6 max-h-6 justify-center items-center m-1 p-1 bg-purple-950 opacity-50
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950'
-                                title={contact.message}>
-                                {contact.message.length > 30 ? `${contact.message.substring(0, 30)}...` : contact.message}
+                                title={contact.subject}>
+                                <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>
+                                    {contact.subject.length > 30 ? `${contact.subject.substring(0, 30)}...` : contact.subject}
+                                </span>
                             </div>
                             <Link
                                 to={`/contact-detail/${contact.id}`}
-                                className='flex w-1/12 max-h-10 justify-center items-center m-1 p-1 bg-cyan-600
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-fit max-h-6 justify-center items-center m-1 p-1 bg-cyan-600
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950
                                 hover:rounded-full hover:shadow-2xl hover:cursor-pointer hover:bg-blue-600
                                 transition-all duration-200 ease-in-out'>
-                                View
+                                <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>View</span>
                             </Link>
                             <button
                                 aria-label={`delete-contact-${contact.id}`}
                                 onClick={() => setSelectedContact(contact.id)}
-                                className='flex w-1/12 max-h-10 justify-center items-center m-1 p-1 bg-red-300
-                                rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
+                                className='flex w-fit max-h-6 justify-center items-center m-1 p-1 bg-red-300
+                                rounded-lg rounded-bl-lg rounded-tr-lg rounded-br-xl
                                 shadow-md shadow-purple-950
                                 hover:rounded-full hover:shadow-2xl hover:cursor-pointer hover:bg-red-600
                                 transition-all duration-200 ease-in-out'>
-                                Delete
+                                <span className='text-[8px] sm:text-xs md:text-sm lg:text-base xl:text-lg'>Delete</span>
                             </button>
                         </div>
                     ))}

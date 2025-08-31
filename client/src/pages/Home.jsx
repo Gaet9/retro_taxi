@@ -1,15 +1,19 @@
 import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
-import voitureCover from "../assets/voiture-en-montagne.jpg";
 import { Navigation } from "../components/Navigation";
+import { IMAGES } from "../config/images";
 
 export const Home = () => {
     return (
-        <div className='bg-cover min-h-screen racing-font' title='Retro Taxi' style={{ backgroundImage: `url(${voitureCover})` }}>
+        <div
+            className='bg-cover bg-center bg-no-repeat min-h-screen racing-font'
+            title='Retro Taxi'
+            style={{ backgroundImage: `url(${IMAGES.HOME_BACKGROUND})` }}>
             <Navigation color='text-butter' />
-            <Header>Retro Taxi</Header> {/* better adding div container with tailwind */}
+            <Header>Retro Taxi</Header>
             <div
-                className='flex mx-auto w-2/3 mt-5 justify-self-center text-6xl text-butter'
+                className='flex mx-auto w-3/4 mt-5 justify-center 
+                            text-3xl text-butter'
                 style={{
                     WebkitTextStroke: "1px #3b0764",
                     textShadow: "none",

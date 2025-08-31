@@ -1,7 +1,17 @@
 const request = require("supertest");
 const app = require("../index");
 const pool = require("../db/dbconn.js");
+const { Resend } = require("resend");
 require("dotenv").config({ path: ".env.test" }); // to charge .env.test instead of default .env
+
+// Mock the entire Resend module to prevent real emails
+jest.mock("resend", () => ({
+    Resend: jest.fn().mockImplementation(() => ({
+        emails: {
+            send: jest.fn().mockResolvedValue({ data: { id: "test-email-id" } }),
+        },
+    })),
+}));
 
 // login to test private routes with admin role
 let authToken;
@@ -23,7 +33,7 @@ beforeEach(() => {
     jest.restoreAllMocks(); // reset mock calls before each test
 });
 
-describe("GET all contact request /api/contact/", () => {
+describe("GET all contact request /api/contact", () => {
     const contactData = {
         id: 1,
         name: "Test",
@@ -37,7 +47,7 @@ describe("GET all contact request /api/contact/", () => {
         jest.spyOn(pool, "query").mockResolvedValueOnce({
             rows: [contactData],
         });
-        const res = await request(app).get("/api/contact/").set("Cookie", authToken);
+        const res = await request(app).get("/api/contact").set("Cookie", authToken);
         expect(typeof res.body.data).toBe("object");
         expect(res.body.data).toBeDefined();
         expect(res.body.data[0]).toHaveProperty("id");
@@ -49,7 +59,7 @@ describe("GET all contact request /api/contact/", () => {
     // Sad path
     test("should return 500 if DB down", async () => {
         jest.spyOn(pool, "query").mockRejectedValueOnce(new Error("DB failure"));
-        const res = await request(app).get("/api/contact/").set("Cookie", authToken);
+        const res = await request(app).get("/api/contact").set("Cookie", authToken);
         // This will only work if the DB is actually down or misconfigured
         // To test manually: change DB_NAME, DB_HOST, etc in .env temporarily
         expect(res.statusCode).toBe(500);
@@ -58,6 +68,7 @@ describe("GET all contact request /api/contact/", () => {
         expect(res.body.message).toBe("Something went wrong");
     });
 });
+
 describe("GET a contact request by id /api/contact/:id", () => {
     const contactData = {
         id: 1,
@@ -104,7 +115,8 @@ describe("GET a contact request by id /api/contact/:id", () => {
         expect(res.body.message).toBe("Contact form not found");
     });
 });
-describe("POST create a contact request /api/contact/", () => {
+
+describe("POST create a contact request /api/contact", () => {
     const contactData = {
         id: 1,
         name: "Test",
@@ -113,48 +125,113 @@ describe("POST create a contact request /api/contact/", () => {
         message: "test",
         submitted_at: "2025-07-24 18:59",
     };
+
+    // Mock Resend email functionality
+    beforeEach(() => {
+        jest.clearAllMocks();
+        // Reset the mock implementation for each test
+        Resend.mockClear();
+    });
+
     // Happy path
-    test("should return success response", async () => {
+    test("should return success response and send email", async () => {
+        // Mock successful database insertion
         jest.spyOn(pool, "query").mockResolvedValueOnce({
             rows: [contactData],
         });
-        const res = await request(app).post(`/api/contact/`).send(contactData).set("Cookie", authToken);
+
+        const res = await request(app).post("/api/contact").send(contactData);
+
         expect(res.body.success).toBe(true);
         expect(res.statusCode).toBe(201);
         expect(res.body.message).toBe("Contact form created successfully");
+
+        // Verify email was sent
+        expect(Resend).toHaveBeenCalled();
     });
+
     // Sad path
     test("should return 400 if missing required fields", async () => {
-        jest.spyOn(pool, "query").mockResolvedValueOnce({
-            rows: [],
-        });
-        const res = await request(app).post("/api/contact");
+        const res = await request(app).post("/api/contact").send({});
         expect(res.statusCode).toBe(400);
         expect(res.body.success).toBe(false);
         expect(res.body.message).toBe("All fields are required");
     });
+
     test("should return 400 if email format is invalid", async () => {
-        jest.spyOn(pool, "query").mockResolvedValueOnce({
-            rows: [contactData],
-        });
         const res = await request(app)
             .post("/api/contact")
-            .send({ ...contactData, email: "not-an-email" }) // passing wrong email format
+            .send({ ...contactData, email: "not-an-email" })
             .set("Cookie", authToken);
         expect(res.statusCode).toBe(400);
         expect(res.body.success).toBe(false);
         expect(res.body.message).toBe("Invalid email format");
     });
+
     test("should return 500 if DB down", async () => {
         jest.spyOn(pool, "query").mockRejectedValueOnce(new Error("DB failure"));
-        const res = await request(app).post(`/api/contact/`).send(contactData);
-        // This will only work if the DB is actually down or misconfigured
-        // To test manually: change DB_NAME, DB_HOST, etc in .env temporarily
+        const res = await request(app).post("/api/contact").send(contactData);
         expect(res.statusCode).toBe(500);
         expect(res.body.success).toBe(false);
         expect(res.body.message).toBe("Something went wrong");
     });
+
+    test("should succeed even if email fails", async () => {
+        // Mock successful database insertion
+        jest.spyOn(pool, "query").mockResolvedValueOnce({
+            rows: [contactData],
+        });
+
+        // Mock email failure
+        Resend.mockImplementation(() => ({
+            emails: {
+                send: jest.fn().mockRejectedValue(new Error("Email service down")),
+            },
+        }));
+
+        const res = await request(app).post("/api/contact").send(contactData).set("Cookie", authToken);
+
+        // Contact form should still succeed even if email fails
+        expect(res.body.success).toBe(true);
+        expect(res.statusCode).toBe(201);
+        expect(res.body.message).toBe("Contact form created successfully");
+    });
+
+    test("should not send email if database insertion fails", async () => {
+        // Mock database failure
+        jest.spyOn(pool, "query").mockRejectedValueOnce(new Error("DB failure"));
+
+        // Mock Resend to track if it's called
+        const mockSend = jest.fn().mockResolvedValue({ data: { id: "test-email-id" } });
+        Resend.mockImplementation(() => ({
+            emails: {
+                send: mockSend,
+            },
+        }));
+
+        const res = await request(app).post("/api/contact").send(contactData);
+
+        // Should fail before reaching email sending
+        expect(res.statusCode).toBe(500);
+        expect(res.body.success).toBe(false);
+
+        // Email should not be sent
+        expect(mockSend).not.toHaveBeenCalled();
+    });
+
+    test("should handle database foreign key violation", async () => {
+        const dbError = new Error("Foreign key violation");
+        dbError.code = "23503";
+
+        jest.spyOn(pool, "query").mockRejectedValueOnce(dbError);
+
+        const res = await request(app).post("/api/contact").send(contactData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("User does not exist");
+    });
 });
+
 describe("DELETE Deletes a contact request /api/contact/:id", () => {
     const contactData = {
         id: 1,

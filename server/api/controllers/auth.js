@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../../config.js");
 const pool = require("../db/dbconn.js");
 const validator = require("validator");
+const { Resend } = require("resend");
 
 const JWT_SECRET = config.jwt.secret;
 
@@ -73,6 +74,436 @@ async function register(req, res) {
             finalNewsletter,
             finalAdminRequest,
         ]);
+
+        // Send email notification to admin about new user registration
+        try {
+            const resend = new Resend(config.apiKeys.resend);
+            const currentDate = new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            });
+
+            const html = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>New User Registration - Retro Taxi</title>
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            margin: 0;
+                            padding: 0;
+                            background-color: #f4f4f4;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: 20px auto;
+                            background: white;
+                            border-radius: 10px;
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                            overflow: hidden;
+                        }
+                        .header {
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            padding: 30px;
+                            text-align: center;
+                        }
+                        .header h1 {
+                            margin: 0;
+                            font-size: 28px;
+                            font-weight: 300;
+                        }
+                        .header .subtitle {
+                            margin-top: 10px;
+                            opacity: 0.9;
+                            font-size: 16px;
+                        }
+                        .content {
+                            padding: 30px;
+                        }
+                        .user-info {
+                            background: #f8f9fa;
+                            border-left: 4px solid #667eea;
+                            padding: 20px;
+                            margin: 20px 0;
+                            border-radius: 5px;
+                        }
+                        .user-info h3 {
+                            margin: 0 0 15px 0;
+                            color: #495057;
+                            font-size: 18px;
+                        }
+                        .info-row {
+                            display: flex;
+                            justify-content: space-between;
+                            margin: 10px 0;
+                            padding: 8px 0;
+                            border-bottom: 1px solid #e9ecef;
+                        }
+                        .info-label {
+                            font-weight: 600;
+                            color: #6c757d;
+                        }
+                        .info-value {
+                            color: #495057;
+                        }
+                        .admin-request {
+                            background: #fff3cd;
+                            border: 1px solid #ffeaa7;
+                            border-radius: 5px;
+                            padding: 15px;
+                            margin: 20px 0;
+                            text-align: center;
+                        }
+                        .admin-request .icon {
+                            font-size: 24px;
+                            margin-bottom: 10px;
+                        }
+                        .admin-request .text {
+                            color: #856404;
+                            font-weight: 600;
+                        }
+                        .footer {
+                            background: #f8f9fa;
+                            padding: 20px;
+                            text-align: center;
+                            border-top: 1px solid #e9ecef;
+                        }
+                        .footer a {
+                            color: #667eea;
+                            text-decoration: none;
+                            font-weight: 600;
+                        }
+                        .footer a:hover {
+                            text-decoration: underline;
+                        }
+                        .date {
+                            text-align: center;
+                            color: #6c757d;
+                            font-size: 14px;
+                            margin-top: 20px;
+                            padding: 10px;
+                            background: #f8f9fa;
+                            border-radius: 5px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>🚖 New User Registration</h1>
+                            <div class="subtitle">Retro Taxi Application</div>
+                        </div>
+                        
+                        <div class="content">
+                            <div class="user-info">
+                                <h3>📋 User Details</h3>
+                                <div class="info-row">
+                                    <span class="info-label">Name:</span>
+                                    <span class="info-value">${username}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Email:</span>
+                                    <span class="info-value">${normalizedEmail}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Registration Date:</span>
+                                    <span class="info-value">${currentDate}</span>
+                                </div>
+                            </div>
+                            
+                            ${
+                                finalAdminRequest ?
+                                    `
+                                <div class="admin-request">
+                                    <div class="icon">⚠️</div>
+                                    <div class="text">ADMIN PRIVILEGES REQUESTED</div>
+                                    <p style="margin: 10px 0 0 0; color: #856404;">This user has requested admin privileges and is pending approval.</p>
+                                </div>
+                            `
+                                :   ""
+                            }
+
+                            ${
+                                finalNewsletter ?
+                                    `
+                                <div class="admin-request">
+                                    <div class="icon">✅</div>
+                                    <div class="text">Registered to newsletter</div>
+                                </div>
+                            `
+                                :   ""
+                            }
+                            
+                            <div class="date">
+                                <strong>Registration Time:</strong> ${new Date().toLocaleString()}
+                            </div>
+                        </div>
+                        
+                        <div class="footer">
+                            <p><strong><a href="https://www.retrotaxi.xyz">Retro Taxi</a></strong> - Driving the future of transportation</p>
+                        </div>
+                    </div>
+                </body>
+                </html>`;
+
+            const text = `
+                            New User Registration - Retro Taxi
+
+                            User Details:
+                            - Name: ${username}
+                            - Email: ${normalizedEmail}
+                            - Registration Date: ${currentDate}
+                            ${finalAdminRequest ? "\n⚠️ ADMIN PRIVILEGES REQUESTED: This user has requested admin privileges and is pending approval." : ""}
+
+                            Registration Time: ${new Date().toLocaleString()}
+
+                            ---
+                            Retro Taxi - Driving the future of transportation
+            `;
+
+            await resend.emails.send({
+                from: "Retro Taxi 🚖 <noreply@retrotaxi.xyz>",
+                to: "gaetan.delorgeril@gmail.com",
+                subject: `New User Registration: ${username}`,
+                html: html,
+                text: text,
+                reply_to: "support@retrotaxi.xyz",
+            });
+
+            console.log(`📧 Admin notification email sent successfully for new user: ${username}`);
+        } catch (emailError) {
+            console.error("Failed to send admin notification email:", emailError);
+            // Don't fail the registration if email fails
+        }
+
+        // Send welcome email to the new user
+        try {
+            const resend = new Resend(config.apiKeys.resend);
+            const currentDate = new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            });
+
+            const html = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Welcome to Retro Taxi!</title>
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            margin: 0;
+                            padding: 0;
+                            background-color: #f4f4f4;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: 20px auto;
+                            background: white;
+                            border-radius: 10px;
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                            overflow: hidden;
+                        }
+                        .header {
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            padding: 30px;
+                            text-align: center;
+                        }
+                        .header h1 {
+                            margin: 0;
+                            font-size: 28px;
+                            font-weight: 300;
+                        }
+                        .header .subtitle {
+                            margin-top: 10px;
+                            opacity: 0.9;
+                            font-size: 16px;
+                        }
+                        .content {
+                            padding: 30px;
+                        }
+                        .welcome-message {
+                            text-align: center;
+                            margin: 20px 0;
+                            padding: 20px;
+                            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                            border-radius: 10px;
+                        }
+                        .welcome-message h2 {
+                            color: #495057;
+                            margin-bottom: 15px;
+                            font-size: 24px;
+                        }
+                        .welcome-message p {
+                            color: #6c757d;
+                            font-size: 16px;
+                            margin: 10px 0;
+                        }
+                        .admin-request {
+                            background: #fff3cd;
+                            border: 1px solid #ffeaa7;
+                            border-radius: 8px;
+                            padding: 20px;
+                            margin: 25px 0;
+                            text-align: center;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                        }
+                        .admin-request .icon {
+                            font-size: 32px;
+                            margin-bottom: 15px;
+                        }
+                        .admin-request .text {
+                            color: #856404;
+                            font-weight: 600;
+                            font-size: 18px;
+                            margin-bottom: 10px;
+                        }
+                        .admin-request .description {
+                            color: #856404;
+                            font-size: 14px;
+                            line-height: 1.5;
+                        }
+                        .next-steps {
+                            background: #e8f5e8;
+                            border: 1px solid #c3e6c3;
+                            border-radius: 8px;
+                            padding: 20px;
+                            margin: 25px 0;
+                        }
+                        .next-steps h3 {
+                            color: #2d5a2d;
+                            margin: 0 0 15px 0;
+                            font-size: 18px;
+                        }
+                        .next-steps ul {
+                            color: #2d5a2d;
+                            margin: 0;
+                            padding-left: 20px;
+                        }
+                        .next-steps li {
+                            margin: 8px 0;
+                        }
+                        .cta-button {
+                            display: inline-block;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            padding: 15px 30px;
+                            text-decoration: none;
+                            border-radius: 25px;
+                            font-weight: 600;
+                            margin: 20px 0;
+                            transition: transform 0.2s ease;
+                        }
+                        .cta-button:hover {
+                            transform: translateY(-2px);
+                        }
+                        .footer {
+                            background: #f8f9fa;
+                            padding: 20px;
+                            text-align: center;
+                            border-top: 1px solid #e9ecef;
+                        }
+                        .footer a {
+                            color: #667eea;
+                            text-decoration: none;
+                            font-weight: 600;
+                        }
+                        .footer a:hover {
+                            text-decoration: underline;
+                        }
+                        .date {
+                            text-align: center;
+                            color: #6c757d;
+                            font-size: 14px;
+                            margin-top: 20px;
+                            padding: 10px;
+                            background: #f8f9fa;
+                            border-radius: 5px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="header">
+                            <h1>Welcome to Retro Taxi!</h1>
+                            <div class="subtitle">Your account has been successfully created</div>
+                        </div>
+                        
+                        <div class="content">
+                            <div class="welcome-message">
+                                <h2>🎉 Welcome aboard, ${username}!</h2>
+                                <p>Thank you for joining the Retro Taxi community. We're excited to have you on board!</p>
+
+                            </div>
+                            
+                            ${
+                                finalAdminRequest ?
+                                    `
+                                <div class="admin-request">
+                                    <div class="icon">⏳</div>
+                                    <div class="text">Admin Privileges Request</div>
+                                    <div class="description">
+                                        We've received your request for admin privileges. 
+                                    </div>
+                                </div>
+                            `
+                                :   ""
+                            }
+
+                            ${
+                                finalNewsletter ?
+                                    `
+                                <div class="admin-request">
+                                    <div class="icon">✅</div>
+                                    <div class="text">You will receive the newsletter</div>
+                                </div>
+                            `
+                                :   ""
+                            }
+                            
+                            <div class="date">
+                                <strong>Account Created:</strong> ${new Date().toLocaleString()}
+                            </div>
+                        </div>
+                        
+                        <div class="footer">
+                            <p><strong><a href="https://www.retrotaxi.xyz">Retro Taxi</a></strong> - Driving the future of transportation</p>
+                            <p style="margin-top: 10px; font-size: 14px; color: #6c757d;">
+                                If you have any questions, please contact us at <a href="mailto:support@retrotaxi.xyz">support@retrotaxi.xyz</a>
+                            </p>
+                        </div>
+                    </div>
+                </body>
+                </html>`;
+
+            await resend.emails.send({
+                from: "Retro Taxi 🚖 <noreply@retrotaxi.xyz>",
+                to: normalizedEmail,
+                subject: `Welcome to Retro Taxi, ${username}! 🚖`,
+                html: html,
+                reply_to: "support@retrotaxi.xyz",
+            });
+
+            console.log(`📧 Welcome email sent successfully to new user: ${username} (${normalizedEmail})`);
+        } catch (emailError) {
+            console.error("Failed to send welcome email to new user:", emailError);
+            // Don't fail the registration if email fails
+        }
 
         // Success message if signed in successfully
         let message = "User registered successfully";

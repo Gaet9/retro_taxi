@@ -5,11 +5,6 @@ import { Header } from "../components/Header";
 import { Link } from "react-router-dom";
 import { fetchBlogById, updateBlog } from "../api/blogs";
 import { useNotification } from "../components/Notification";
-import CruiseImg from "../assets/Cruise.jpg";
-import TeslaImg from "../assets/Tesla.jpg";
-import WaymoImg from "../assets/Waymo.jpg";
-import ZooxImg from "../assets/zoox.jpg";
-import BaiduImg from "../assets/baidu.jpg";
 
 export const UpdateBlog = () => {
     const { id } = useParams();
@@ -29,6 +24,7 @@ export const UpdateBlog = () => {
     const [category, setCategory] = useState("");
     const [model, setModel] = useState("");
     const [brand, setBrand] = useState("");
+    const [image_url, setImage_url] = useState("");
     const [user_id, setUser_id] = useState("");
 
     useEffect(() => {
@@ -38,6 +34,7 @@ export const UpdateBlog = () => {
             setCategory(blog.category || "");
             setModel(blog.model || "");
             setBrand(blog.brand || "");
+            setImage_url(blog.image_url || "");
             setUser_id(blog.user_id || "");
         }
     }, [blog]);
@@ -53,6 +50,7 @@ export const UpdateBlog = () => {
             category,
             model,
             brand,
+            image_url,
             user_id,
             status: statusToSet,
             last_updated: new Date().toISOString(),
@@ -68,14 +66,6 @@ export const UpdateBlog = () => {
         }
     };
 
-    const images = {
-        Tesla: TeslaImg,
-        Amazon: ZooxImg,
-        Google: WaymoImg,
-        GM: CruiseImg,
-        Baidu: BaiduImg,
-    };
-
     if (!blog) {
         return (
             <div className='min-h-screen bg-butter racing-font'>
@@ -86,8 +76,8 @@ export const UpdateBlog = () => {
                         <div className='inline-flex items-center justify-center w-16 h-16 bg-purple-950 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl mb-4'>
                             <i className='fa-solid fa-edit text-2xl text-purple-600'></i>
                         </div>
-                        <h3 className='text-lg font-semibold text-purple-900 mb-2'>Blog not found</h3>
-                        <p className='text-purple-600 mb-4'>Sorry, this blog doesn't exist</p>
+                        <h3 className='text-base sm:text-lg md:text-xl font-semibold text-purple-900 mb-2'>Blog not found</h3>
+                        <p className='text-sm sm:text-base md:text-lg text-purple-600 mb-4'>Sorry, this blog doesn't exist</p>
                         <Link
                             to='/blogs'
                             className='inline-flex items-center px-6 py-3 bg-purple-950 text-butter rounded-xl
@@ -110,15 +100,12 @@ export const UpdateBlog = () => {
 
             {/* Main Content Container */}
             <div className='container mx-auto px-6 py-8'>
-                <div className='max-w-8xl mx-auto'>
+                <div className='max-w-6xl mx-auto'>
                     {/* Blog Header Card with Hero Image */}
                     <div className='bg-butter rounded-2xl shadow-lg shadow-purple-950/20 mb-8 overflow-hidden'>
                         {/* Hero Image Section */}
-                        <div className='relative h-80 overflow-hidden'>
-                            <div
-                                className='w-full h-full bg-cover bg-center'
-                                style={{ backgroundImage: `url(${images[blog.brand] || images.Tesla})` }}
-                            />
+                        <div className='relative h-48 sm:h-64 md:h-80 overflow-hidden'>
+                            <div className='w-full h-full bg-cover bg-center' style={{ backgroundImage: `url(${blog.image_url})` }} />
 
                             {/* Top Info Bar */}
                             <div className='absolute top-0 left-0 right-0 p-6'>
@@ -126,14 +113,14 @@ export const UpdateBlog = () => {
                                     {/* Brand and Model */}
                                     <div className='flex flex-col space-y-2'>
                                         <div
-                                            className='inline-flex items-center px-10 py-2 bg-purple-950/90 text-butter text-xl  
+                                            className='inline-flex items-center px-4 sm:px-6 md:px-10 py-2 bg-purple-950/90 text-butter text-sm sm:text-base md:text-xl  
                                             rounded-bl-2xl rounded-tr-2xl rounded-br-3xl
                                             backdrop-blur-sm shadow-lg'>
                                             {blog.brand || "Brand"}
                                         </div>
                                         {blog.model && (
                                             <div
-                                                className='inline-flex items-center px-10 py-2 bg-purple-800/80 text-butter text-xl 
+                                                className='inline-flex items-center px-4 sm:px-6 md:px-10 py-2 bg-purple-800/80 text-butter text-sm sm:text-base md:text-xl 
                                                 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl backdrop-blur-sm shadow-lg'>
                                                 {blog.model}
                                             </div>
@@ -153,8 +140,10 @@ export const UpdateBlog = () => {
                         </div>
 
                         {/* Title Section */}
-                        <div className='p-6'>
-                            <h1 className='text-3xl text-purple-950 leading-tight'>Update: {blog.title}</h1>
+                        <div className='p-4 sm:p-6'>
+                            <h1 className='text-lg sm:text-xl md:text-2xl lg:text-3xl text-purple-950 leading-tight'>
+                                Update: {blog.title}
+                            </h1>
                         </div>
                     </div>
 
@@ -162,14 +151,14 @@ export const UpdateBlog = () => {
                     <div className='bg-butter rounded-2xl shadow-lg shadow-purple-950/20 mb-8 p-4'>
                         <div className='flex flex-wrap justify-center gap-4'>
                             <div
-                                className='inline-flex items-center px-4 py-2 bg-purple-950 text-butter text-lg 
+                                className='inline-flex items-center px-4 py-2 bg-purple-950 text-butter text-sm sm:text-base md:text-lg 
                                 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl shadow-lg'>
                                 <i className='fa-solid fa-calendar mr-2'></i>
                                 Created: {new Date(blog.created_at || Date.now()).toLocaleDateString()}
                             </div>
                             {blog.last_updated && (
                                 <div
-                                    className='inline-flex items-center px-4 py-2 bg-purple-800 text-butter text-lg 
+                                    className='inline-flex items-center px-4 py-2 bg-purple-800 text-butter text-sm sm:text-base md:text-lg 
                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl shadow-lg'>
                                     <i className='fa-solid fa-edit mr-2'></i>
                                     Last Updated: {new Date(blog.last_updated).toLocaleDateString()}
@@ -177,7 +166,7 @@ export const UpdateBlog = () => {
                             )}
                             {blog.category && (
                                 <div
-                                    className='inline-flex items-center px-4 py-2 bg-purple-800 text-butter text-lg 
+                                    className='inline-flex items-center px-4 py-2 bg-purple-800 text-butter text-sm sm:text-base md:text-lg 
                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl shadow-lg'>
                                     <i className='fa-solid fa-tag mr-2'></i>
                                     {blog.category}
@@ -188,11 +177,13 @@ export const UpdateBlog = () => {
 
                     {/* Update Form Card */}
                     <div className='bg-butter rounded-2xl shadow-lg shadow-purple-950/20 overflow-hidden'>
-                        <div className='p-8'>
+                        <div className='p-4 sm:p-6 md:p-8'>
                             {/* Top Fields Row - Single Line */}
-                            <div className='flex flex-row gap-4 mb-6 p-4 bg-butter rounded-xl'>
+                            <div className='flex flex-col sm:flex-row gap-4 mb-6 p-4 bg-butter rounded-xl'>
                                 <div className='flex-1'>
-                                    <label htmlFor='title' className='block text-xs font-medium text-purple-800 mb-1'>
+                                    <label
+                                        htmlFor='title'
+                                        className='block text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-1'>
                                         <i className='fa-solid fa-heading mr-1'></i>Title
                                     </label>
                                     <textarea
@@ -202,7 +193,7 @@ export const UpdateBlog = () => {
                                         maxLength={50}
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
-                                        className='w-full p-2 text-sm text-purple-900 bg-butter border border-purple-200 
+                                        className='w-full p-2 text-xs sm:text-sm md:text-base text-purple-900 bg-butter border border-purple-200 
                                             rounded-lg resize-none focus:border-purple-500 focus:ring-1 focus:ring-purple-200 
                                             transition-all duration-200 ease-out readable-font'
                                         rows={2}
@@ -211,7 +202,9 @@ export const UpdateBlog = () => {
                                 </div>
 
                                 <div className='flex-1'>
-                                    <label htmlFor='brand' className='block text-xs font-medium text-purple-800 mb-1'>
+                                    <label
+                                        htmlFor='brand'
+                                        className='block text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-1'>
                                         <i className='fa-solid fa-tag mr-1'></i>Brand
                                     </label>
                                     <textarea
@@ -221,7 +214,7 @@ export const UpdateBlog = () => {
                                         maxLength={30}
                                         value={brand}
                                         onChange={(e) => setBrand(e.target.value)}
-                                        className='w-full p-2 text-sm text-purple-900 bg-butter border border-purple-200 
+                                        className='w-full p-2 text-xs sm:text-sm md:text-base text-purple-900 bg-butter border border-purple-200 
                                             rounded-lg resize-none focus:border-purple-500 focus:ring-1 focus:ring-purple-200 
                                             transition-all duration-200 ease-out readable-font'
                                         rows={2}
@@ -230,7 +223,9 @@ export const UpdateBlog = () => {
                                 </div>
 
                                 <div className='flex-1'>
-                                    <label htmlFor='model' className='block text-xs font-medium text-purple-800 mb-1'>
+                                    <label
+                                        htmlFor='model'
+                                        className='block text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-1'>
                                         <i className='fa-solid fa-car mr-1'></i>Model
                                     </label>
                                     <textarea
@@ -240,7 +235,7 @@ export const UpdateBlog = () => {
                                         maxLength={30}
                                         value={model}
                                         onChange={(e) => setModel(e.target.value)}
-                                        className='w-full p-2 text-sm text-purple-900 bg-butter border border-purple-200 
+                                        className='w-full p-2 text-xs sm:text-sm md:text-base text-purple-900 bg-butter border border-purple-200 
                                             rounded-lg resize-none focus:border-purple-500 focus:ring-1 focus:ring-purple-200 
                                             transition-all duration-200 ease-out readable-font'
                                         rows={2}
@@ -249,7 +244,9 @@ export const UpdateBlog = () => {
                                 </div>
 
                                 <div className='flex-1'>
-                                    <label htmlFor='category' className='block text-xs font-medium text-purple-800 mb-1'>
+                                    <label
+                                        htmlFor='category'
+                                        className='block text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-1'>
                                         <i className='fa-solid fa-folder mr-1'></i>Category
                                     </label>
                                     <textarea
@@ -259,7 +256,7 @@ export const UpdateBlog = () => {
                                         maxLength={30}
                                         value={category}
                                         onChange={(e) => setCategory(e.target.value)}
-                                        className='w-full p-2 text-sm text-purple-900 bg-butter border border-purple-200 
+                                        className='w-full p-2 text-xs sm:text-sm md:text-base text-purple-900 bg-butter border border-purple-200 
                                             rounded-lg resize-none focus:border-purple-500 focus:ring-1 focus:ring-purple-200 
                                             transition-all duration-200 ease-out readable-font'
                                         rows={2}
@@ -268,7 +265,9 @@ export const UpdateBlog = () => {
                                 </div>
 
                                 <div className='flex-1'>
-                                    <label htmlFor='user_id' className='block text-xs font-medium text-purple-800 mb-1'>
+                                    <label
+                                        htmlFor='user_id'
+                                        className='block text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-1'>
                                         <i className='fa-solid fa-user mr-1'></i>User ID
                                     </label>
                                     <textarea
@@ -278,7 +277,7 @@ export const UpdateBlog = () => {
                                         maxLength={30}
                                         value={user_id}
                                         onChange={(e) => setUser_id(e.target.value)}
-                                        className='w-full p-2 text-sm text-purple-900 bg-butter border border-purple-200 
+                                        className='w-full p-2 text-xs sm:text-sm md:text-base text-purple-900 bg-butter border border-purple-200 
                                             rounded-lg resize-none focus:border-purple-500 focus:ring-1 focus:ring-purple-200 
                                             transition-all duration-200 ease-out readable-font'
                                         rows={2}
@@ -287,25 +286,31 @@ export const UpdateBlog = () => {
                                 </div>
 
                                 <div className='flex-1'>
-                                    <label htmlFor='file' className='block text-xs font-medium text-purple-800 mb-1'>
-                                        <i className='fa-solid fa-image mr-1'></i>Image
+                                    <label
+                                        htmlFor='image_url'
+                                        className='block text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-1'>
+                                        <i className='fa-solid fa-image mr-1'></i>Image URL
                                     </label>
                                     <input
-                                        type='file'
-                                        id='file'
-                                        accept='image/*'
-                                        className='w-full px-2 py-5 text-xs text-purple-900 bg-butter border border-purple-200 
-                                            rounded-lg cursor-pointer focus:border-purple-500 focus:ring-1 focus:ring-purple-200 
-                                            transition-all duration-200 ease-out file:mr-2 file:py-1 file:px-2 
-                                            file:rounded file:border-0 file:text-xs file:font-medium 
-                                            file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200'
+                                        value={image_url}
+                                        onChange={(e) => setImage_url(e.target.value)}
+                                        type='url'
+                                        id='image_url'
+                                        placeholder='image.jpg'
+                                        className='w-full p-2 text-xs sm:text-sm md:text-base text-purple-900 bg-butter border border-purple-200 
+                                            rounded-lg cursor-text focus:border-purple-500 focus:ring-1 focus:ring-purple-200 
+                                            transition-all duration-200 ease-out'
                                     />
+                                    <div className='text-xs text-purple-600 mt-1'>
+                                        <i className='fa-solid fa-link mr-1'></i>
+                                        Enter your S3 image URL
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Wide Content Section - Full Screen Width */}
                             <div className='w-full'>
-                                <label htmlFor='content' className='block text-sm font-medium text-purple-800 mb-2'>
+                                <label htmlFor='content' className='block text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-2'>
                                     <i className='fa-solid fa-file-text mr-2'></i>
                                     Blog Content
                                 </label>
@@ -317,7 +322,7 @@ export const UpdateBlog = () => {
                                     placeholder='Content (JSON format)'
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
-                                    className='w-full h-96 p-4 text-lg text-purple-900 bg-butter border-2 border-purple-200 
+                                    className='w-full h-64 sm:h-80 md:h-96 p-4 text-sm sm:text-base md:text-lg text-purple-900 bg-butter border-2 border-purple-200 
                                         rounded-xl resize-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 
                                         transition-all duration-200 ease-out content-text'
                                 />
@@ -330,10 +335,10 @@ export const UpdateBlog = () => {
                             {/* Content Preview - Shows formatted content */}
                             {content && (
                                 <div className='mb-4 p-4 bg-white/60 rounded-xl border border-purple-200'>
-                                    <h4 className='text-sm font-medium text-purple-800 mb-2'>
+                                    <h4 className='text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-2'>
                                         <i className='fa-solid fa-eye mr-1'></i>Content Preview
                                     </h4>
-                                    <div className='max-h-80 overflow-y-auto prose prose-sm max-w-none'>
+                                    <div className='max-h-64 sm:max-h-80 overflow-y-auto prose prose-sm max-w-none'>
                                         <div className='text-purple-900 leading-relaxed space-y-3 content-text'>
                                             {(() => {
                                                 // Convert JSON data to readable plain text (same function as SingleBlog.jsx)
@@ -442,7 +447,7 @@ export const UpdateBlog = () => {
                                                                         return (
                                                                             <h3
                                                                                 key={lineIdx}
-                                                                                className='text-lg font-semibold text-purple-800 mb-2 mt-3'>
+                                                                                className='text-sm sm:text-base md:text-lg font-semibold text-purple-800 mb-2 mt-3'>
                                                                                 {text}
                                                                             </h3>
                                                                         );
@@ -452,7 +457,7 @@ export const UpdateBlog = () => {
                                                                         return (
                                                                             <h1
                                                                                 key={lineIdx}
-                                                                                className='text-2xl font-bold text-purple-900 mb-3 mt-4'>
+                                                                                className='text-lg sm:text-xl md:text-2xl font-bold text-purple-900 mb-3 mt-4'>
                                                                                 {text}
                                                                             </h1>
                                                                         );
@@ -460,14 +465,18 @@ export const UpdateBlog = () => {
                                                                         // Render list items with HTML support for links
                                                                         const text = line.replace(/^•\s*/, "");
                                                                         return (
-                                                                            <li key={lineIdx} className='ml-4 mb-1 list-disc'>
+                                                                            <li
+                                                                                key={lineIdx}
+                                                                                className='ml-4 mb-1 list-disc text-xs sm:text-sm md:text-base'>
                                                                                 <span dangerouslySetInnerHTML={{ __html: text }} />
                                                                             </li>
                                                                         );
                                                                     } else if (line.trim()) {
                                                                         // Render regular text
                                                                         return (
-                                                                            <p key={lineIdx} className='mb-2 leading-relaxed'>
+                                                                            <p
+                                                                                key={lineIdx}
+                                                                                className='mb-2 leading-relaxed text-xs sm:text-sm md:text-base'>
                                                                                 {line}
                                                                             </p>
                                                                         );
@@ -484,12 +493,12 @@ export const UpdateBlog = () => {
                             )}
 
                             {/* Action Buttons */}
-                            <div className='flex justify-end mt-8 gap-4'>
+                            <div className='flex flex-col sm:flex-row justify-end mt-8 gap-4'>
                                 <button
                                     type='submit'
                                     onClick={(e) => handleSubmit(e, "draft")}
                                     className='flex justify-center items-center 
-                                    px-8 py-3 text-lg 
+                                    px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-sm sm:text-base md:text-lg 
                                     bg-purple-800 text-butter opacity-80 
                                     shadow-lg shadow-purple-950/20
                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl cursor-pointer
@@ -502,7 +511,7 @@ export const UpdateBlog = () => {
                                     type='submit'
                                     onClick={(e) => handleSubmit(e, "published")}
                                     className='flex justify-center items-center 
-                                    px-8 py-3 text-lg 
+                                    px-4 sm:px-6 md:px-8 py-2 sm:py-3 text-sm sm:text-base md:text-lg 
                                     bg-purple-950 text-butter 
                                     shadow-lg shadow-purple-950/20
                                     rounded-bl-2xl rounded-tr-2xl rounded-br-3xl cursor-pointer
@@ -519,7 +528,7 @@ export const UpdateBlog = () => {
                     <div className='text-center mt-8'>
                         <Link
                             to='/admin-dash'
-                            className='inline-flex items-center px-8 py-4 bg-purple-800 text-butter text-lg
+                            className='inline-flex items-center px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 bg-purple-800 text-butter text-sm sm:text-base md:text-lg
                                 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl 
                                 shadow-lg shadow-purple-950/20 hover:shadow-2xl hover:shadow-purple-950
                                 hover:rounded-full transition-all duration-300 ease-out'>

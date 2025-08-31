@@ -112,41 +112,22 @@ async function sendNewsletter() {
         isSending = true;
         console.log("📧 Time to send newsletter!");
 
-        // Get all newsletter subscribers
-        const result = await pool.query("SELECT id, name, email FROM users WHERE newsletter = true AND email IS NOT NULL");
+        // Create mock request/response objects for the function
+        const mockReq = {
+            body: {},
+            user: { id: 14 }, // Default user ID
+            headers: {},
+        };
 
-        if (result.rows.length === 0) {
-            console.log("No subscribers found");
-            return;
-        }
+        const mockRes = {
+            json: (data) => console.log("✅ Newsletter sent successfully"),
+            status: (code) => ({
+                json: (data) => console.log("✅ Newsletter sending completed"),
+            }),
+        };
 
-        console.log(`Found ${result.rows.length} subscribers`);
-
-        // Send to each subscriber
-        for (const user of result.rows) {
-            try {
-                const mockReq = {
-                    body: {
-                        name: user.name,
-                        email: user.email,
-                    },
-                };
-
-                const mockRes = {
-                    json: (data) => console.log(`📧 Sent to ${user.email}`),
-                    status: (code) => ({
-                        json: (data) => console.log(`📧 Sent to ${user.email}`),
-                    }),
-                };
-
-                await send_newsletter(mockReq, mockRes);
-
-                // Small delay between sends to avoid rate limiting
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-            } catch (error) {
-                console.error(`Error sending to ${user.email}:`, error);
-            }
-        }
+        // Call send_newsletter once - it handles all subscribers internally
+        await send_newsletter(mockReq, mockRes);
 
         console.log("✅ Newsletter sending completed");
     } catch (error) {
