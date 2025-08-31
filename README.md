@@ -1,20 +1,19 @@
 # 📖 Retro Taxi
 
-_A one-line description of what the project does._
+This app is a automated blog about autonomous vehicles around the world
 
 ---
 
 ## ✨ Overview
 
--   Short explanation of the project’s purpose
--   Who it’s for / why it’s useful
+-   Acts as a virtual media. It's not 100% managed by IA yet but IA features are added slowly.
+-   For anyone interested in this niche and who wants to know more.
 
 ---
 
 ## 🚀 Features
 
--   List of main features or functionalities
--   Optional: screenshots or demo links
+-   Blogs are written with Perplexity
 
 ---
 
@@ -23,9 +22,9 @@ _A one-line description of what the project does._
 Step-by-step instructions to set up locally:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Gaet9/retro-taxi.git
 cd <project-folder>
-<install steps>
+npm install
 ```
 
 ---
@@ -35,47 +34,59 @@ cd <project-folder>
 Show how to run the project and basic usage examples:
 
 ```bash
-<command to start app>
+npm run dev
 ```
-
-(Optional: screenshots, sample inputs/outputs)
-
----
 
 ## 📂 Project Structure
 
-(Optional but good practice — show how files are organized)
-
 ```
-project/
-│── src/
-│── tests/
+retro_taxi/
+│── client/
+  │── src/
+    │── api/
+    │── assets/
+    │── components/
+    │── context/
+    │── pages/
+    │── public/
+│── server/
+  │── api/
+    │── assets/
+    │── controllers/
+    │── coverage/
+    │── db/
+    │── middlewares/
+    │── routes/
+    │── scripts/
+    │── services/
+    │── tests/
+    │── index.js/
 │── README.md
-│── package.json
 ```
 
 ---
 
 ## 🧪 Testing
 
-How to run tests:
+How to run unit tests:
 
 ```bash
-npm test
+npm run test
+```
+
+How to run e2e tests (example)
+
+```bash
+node server/api/tests/e2e/signupFlow.e2e.js
 ```
 
 ---
 
 ## 🤝 Contributing
 
--   Guidelines for pull requests
--   Coding style / naming conventions
-
 ---
 
 ## 📜 License
-
-Mention the license (MIT, Apache 2.0, etc.).
 
 ---
 
