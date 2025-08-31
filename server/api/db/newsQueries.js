@@ -74,12 +74,6 @@ const create_newsletter = async (req, res) => {
             }),
         });
 
-        if (!perplexityRes.ok) {
-            const errorText = await perplexityRes.text();
-            console.error("Perplexity API error:", errorText);
-            throw new Error("Failed to fetch from Perplexity API");
-        }
-
         const perplexityData = await perplexityRes.json();
         const content = perplexityData.choices[0].message.content;
 
@@ -100,7 +94,7 @@ const create_newsletter = async (req, res) => {
             throw new Error("Invalid newsletter structure received from Perplexity API");
         }
 
-        newsletter.user_id = 14; // or from req.user.id or similar
+        newsletter.user_id = 4; // or from req.user.id or similar
         const S3_image_URL = "https://images-retrotaxi.s3.eu-north-1.amazonaws.com/";
         const random = Math.floor(Math.random() * 27) + 1;
 

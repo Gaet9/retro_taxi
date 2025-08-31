@@ -13,7 +13,7 @@ router.get("/:id(\\d+)", verifyToken, userQueries.user_details);
 router.put("/me", verifyToken, userQueries.user_update);
 router.delete("/me", verifyToken, userQueries.user_delete);
 // Admin-only
-router.get("/", verifyToken, userQueries.user_index);
+router.get("/", verifyToken, verifyAdmin, userQueries.user_index);
 router.put("/:id(\\d+)/newsletter", verifyToken, userQueries.user_updateNewsletter);
 router.put("/:id(\\d+)/role", verifyToken, verifyAdmin, userQueries.user_updateRole);
 router.put("/:id(\\d+)/approve-admin", verifyToken, verifyAdmin, userQueries.user_approveAdmin);

@@ -3,14 +3,6 @@ const validator = require("validator");
 const { Resend } = require("resend");
 const config = require("../../config.js");
 
-// Check Resend configuration on startup
-console.log("🔧 Contact Queries Module Loaded");
-console.log("🔧 Resend API Key Status:", config.apiKeys.resend ? "✅ Configured" : "❌ Missing");
-if (config.apiKeys.resend) {
-    console.log("🔧 Resend API Key Length:", config.apiKeys.resend.length);
-    console.log("🔧 Resend API Key Preview:", config.apiKeys.resend.substring(0, 8) + "...");
-}
-
 //Middleware to get all contact forms sent
 const contact_index = (req, res) => {
     const result = pool
