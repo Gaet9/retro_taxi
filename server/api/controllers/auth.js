@@ -271,7 +271,7 @@ async function register(req, res) {
 
             await resend.emails.send({
                 from: "Retro Taxi 🚖 <noreply@retrotaxi.xyz>",
-                to: "gaetan.delorgeril@gmail.com",
+                to: process.env.ADMIN_EMAIL || "gaetan.delorgeril@gmail.com",
                 subject: `New User Registration: ${username}`,
                 html: html,
                 text: text,

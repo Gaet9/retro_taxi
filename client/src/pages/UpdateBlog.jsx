@@ -26,6 +26,7 @@ export const UpdateBlog = () => {
     const [brand, setBrand] = useState("");
     const [image_url, setImage_url] = useState("");
     const [user_id, setUser_id] = useState("");
+    const [sources, setSources] = useState("");
 
     useEffect(() => {
         if (blog) {
@@ -36,6 +37,7 @@ export const UpdateBlog = () => {
             setBrand(blog.brand || "");
             setImage_url(blog.image_url || "");
             setUser_id(blog.user_id || "");
+            setSources(blog.sources ? (Array.isArray(blog.sources) ? blog.sources.join("\n") : blog.sources) : "");
         }
     }, [blog]);
 
@@ -52,6 +54,7 @@ export const UpdateBlog = () => {
             brand,
             image_url,
             user_id,
+            sources: sources ? sources.split("\n").filter((source) => source.trim()) : [],
             status: statusToSet,
             last_updated: new Date().toISOString(),
         };
@@ -331,6 +334,100 @@ export const UpdateBlog = () => {
                                     Content should be in JSON format. The preview below shows how it will appear when published.
                                 </div>
                             </div>
+
+                            {/* Sources Section */}
+                            <div className='w-full mt-6'>
+                                <label htmlFor='sources' className='block text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-2'>
+                                    <i className='fa-solid fa-link mr-2'></i>
+                                    Sources
+                                </label>
+                                <textarea
+                                    id='sources'
+                                    type='text'
+                                    placeholder='Enter sources (one per line)'
+                                    value={sources}
+                                    onChange={(e) => setSources(e.target.value)}
+                                    className='w-full h-32 sm:h-40 md:h-48 p-4 text-sm sm:text-base md:text-lg text-purple-900 bg-butter border-2 border-purple-200 
+                                        rounded-xl resize-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 
+                                        transition-all duration-200 ease-out'
+                                />
+                                <div className='text-xs text-purple-600 mt-2'>
+                                    <i className='fa-solid fa-info-circle mr-1'></i>
+                                    Enter one source per line. URLs will be automatically converted to clickable links.
+                                </div>
+                            </div>
+
+                            {/* Sources Preview - Shows formatted sources */}
+                            {sources && (
+                                <div className='mb-4 p-4 bg-white/60 rounded-xl border border-purple-200'>
+                                    <h4 className='text-xs sm:text-sm md:text-base font-medium text-purple-800 mb-2'>
+                                        <i className='fa-solid fa-eye mr-1'></i>Sources Preview
+                                    </h4>
+                                    <div className='max-h-32 sm:max-h-40 overflow-y-auto prose prose-sm max-w-none'>
+                                        <div className='text-purple-900 leading-relaxed space-y-2'>
+                                            {sources
+                                                .split("\n")
+                                                .filter((source) => source.trim())
+                                                .flatMap((source, idx) => {
+                                                    // Handle comma-separated sources
+                                                    if (source.includes(",")) {
+                                                        return source.split(",").map((s, i) => ({ source: s.trim(), key: `${idx}-${i}` }));
+                                                    }
+                                                    return [{ source, key: idx }];
+                                                })
+                                                .map(({ source, key }) => {
+                                                    // Check if it's an HTML anchor tag (from Perplexity)
+                                                    if (source.includes("<a href=")) {
+                                                        const linkMatch = source.match(/<a\s+href=['"]([^'"]+)['"][^>]*>([^<]+)<\/a>/);
+                                                        if (linkMatch) {
+                                                            const url = linkMatch[1];
+                                                            const text = linkMatch[2];
+                                                            return (
+                                                                <li
+                                                                    key={key}
+                                                                    className='ml-4 mb-1 list-disc text-xs sm:text-sm md:text-base'>
+                                                                    <a
+                                                                        href={url}
+                                                                        target='_blank'
+                                                                        rel='noopener noreferrer'
+                                                                        className='text-blue-600 hover:text-blue-800 underline'>
+                                                                        {text}
+                                                                    </a>
+                                                                </li>
+                                                            );
+                                                        }
+                                                    }
+                                                    // Check if it's a plain URL
+                                                    else if (source.includes("http")) {
+                                                        const urlMatch = source.match(/(https?:\/\/[^\s)]+)/);
+                                                        if (urlMatch) {
+                                                            const text = source.replace(urlMatch[0], "").replace(/[()]/g, "").trim();
+                                                            const url = urlMatch[0];
+                                                            return (
+                                                                <li
+                                                                    key={key}
+                                                                    className='ml-4 mb-1 list-disc text-xs sm:text-sm md:text-base'>
+                                                                    <a
+                                                                        href={url}
+                                                                        target='_blank'
+                                                                        rel='noopener noreferrer'
+                                                                        className='text-blue-600 hover:text-blue-800 underline'>
+                                                                        {text || url}
+                                                                    </a>
+                                                                </li>
+                                                            );
+                                                        }
+                                                    }
+                                                    return (
+                                                        <li key={key} className='ml-4 mb-1 list-disc text-xs sm:text-sm md:text-base'>
+                                                            <span className='underline'>{source}</span>
+                                                        </li>
+                                                    );
+                                                })}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Content Preview - Shows formatted content */}
                             {content && (

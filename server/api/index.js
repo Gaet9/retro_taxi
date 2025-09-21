@@ -25,9 +25,13 @@ app.use("/api/contact", contactRoutes); // This sets the base path for all user 
 app.use("/api/auth", authRoutes);
 app.use("/api/news", newsRoutes);
 
-// Start the weekly newsletter service
-const weeklyNewsletter = require("./services/weeklyNewsletter");
-weeklyNewsletter.start();
+// Start the weekly newsletter service only in production
+if (process.env.NODE_ENV === "production") {
+    const weeklyNewsletter = require("./services/weeklyNewsletter");
+    weeklyNewsletter.start();
+} else {
+    console.log("🧪 Development/Test mode: Newsletter service disabled");
+}
 
 // Enable CORS for all routes
 

@@ -264,7 +264,7 @@ const contact_create_form = async (req, res) => {
 
             const emailData = {
                 from: "Retro Taxi 📧 <noreply@retrotaxi.xyz>",
-                to: "gaetan.delorgeril@gmail.com",
+                to: process.env.ADMIN_EMAIL || "gaetan.delorgeril@gmail.com",
                 subject: `New Contact Message: ${subject}`,
                 html: html,
                 reply_to: normalizedEmail,

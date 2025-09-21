@@ -257,6 +257,135 @@ export const SingleBlog = () => {
                         </div>
                     </div>
 
+                    {/* Sources Section */}
+                    {blog.sources && (
+                        <div className='bg-butter rounded-2xl shadow-lg shadow-purple-950/20 overflow-hidden mt-8'>
+                            <div className='p-8'>
+                                <h2 className='text-2xl sm:text-3xl md:text-4xl font-bold text-purple-900 mb-6'>
+                                    <i className='fa-solid fa-link mr-3'></i>
+                                    Sources
+                                </h2>
+                                <div className='prose prose-lg max-w-none'>
+                                    <div className='text-purple-950 leading-relaxed space-y-4'>
+                                        {(() => {
+                                            // Handle different sources data types
+                                            let sourcesArray = [];
+
+                                            if (Array.isArray(blog.sources)) {
+                                                sourcesArray = blog.sources;
+                                            } else if (typeof blog.sources === "string") {
+                                                // If sources is a string, try to parse it as JSON
+                                                try {
+                                                    const parsed = JSON.parse(blog.sources);
+                                                    // Check if the parsed result is still a string (double-encoded)
+                                                    if (typeof parsed === "string") {
+                                                        sourcesArray = JSON.parse(parsed);
+                                                    } else if (Array.isArray(parsed)) {
+                                                        sourcesArray = parsed;
+                                                    } else {
+                                                        sourcesArray = [parsed];
+                                                    }
+                                                } catch {
+                                                    // If JSON parsing fails, split by commas
+                                                    sourcesArray = blog.sources.split(",").map((s) => s.trim());
+                                                }
+                                            } else if (blog.sources && typeof blog.sources === "object") {
+                                                // If it's an object, convert to array
+                                                sourcesArray = Object.values(blog.sources);
+                                            }
+
+                                            return sourcesArray
+                                                .flatMap((source, idx) => {
+                                                    // Handle comma-separated sources
+                                                    if (typeof source === "string" && source.includes(",")) {
+                                                        return source.split(",").map((s, i) => ({ source: s.trim(), key: `${idx}-${i}` }));
+                                                    }
+                                                    return [{ source, key: idx }];
+                                                })
+                                                .map(({ source, key }) => {
+                                                    // Handle different source formats
+                                                    if (typeof source === "string") {
+                                                        // Check if it's an HTML anchor tag (from Perplexity)
+                                                        if (source.includes("<a href=")) {
+                                                            const linkMatch = source.match(/<a\s+href=['"]([^'"]+)['"][^>]*>([^<]+)<\/a>/);
+                                                            if (linkMatch) {
+                                                                const url = linkMatch[1];
+                                                                const text = linkMatch[2];
+                                                                return (
+                                                                    <li
+                                                                        key={key}
+                                                                        className='ml-6 mb-2 list-disc text-sm sm:text-base md:text-lg'>
+                                                                        <a
+                                                                            href={url}
+                                                                            target='_blank'
+                                                                            rel='noopener noreferrer'
+                                                                            className='text-blue-600 hover:text-blue-800 underline'>
+                                                                            {text}
+                                                                        </a>
+                                                                    </li>
+                                                                );
+                                                            }
+                                                        }
+                                                        // Check if it's a plain URL
+                                                        else if (source.includes("http")) {
+                                                            const urlMatch = source.match(/(https?:\/\/[^\s)]+)/);
+                                                            if (urlMatch) {
+                                                                const text = source.replace(urlMatch[0], "").replace(/[()]/g, "").trim();
+                                                                const url = urlMatch[0];
+                                                                return (
+                                                                    <li
+                                                                        key={key}
+                                                                        className='ml-6 mb-2 list-disc text-sm sm:text-base md:text-lg'>
+                                                                        <a
+                                                                            href={url}
+                                                                            target='_blank'
+                                                                            rel='noopener noreferrer'
+                                                                            className='text-blue-600 hover:text-blue-800 underline'>
+                                                                            {text || url}
+                                                                        </a>
+                                                                    </li>
+                                                                );
+                                                            } else {
+                                                                return (
+                                                                    <li
+                                                                        key={key}
+                                                                        className='ml-6 mb-2 list-disc text-sm sm:text-base md:text-lg'>
+                                                                        <span className='underline'>{source}</span>
+                                                                    </li>
+                                                                );
+                                                            }
+                                                        } else {
+                                                            return (
+                                                                <li
+                                                                    key={key}
+                                                                    className='ml-6 mb-2 list-disc text-sm sm:text-base md:text-lg'>
+                                                                    <span className='underline'>{source}</span>
+                                                                </li>
+                                                            );
+                                                        }
+                                                    } else if (typeof source === "object" && source !== null) {
+                                                        // Handle object format with title and url
+                                                        return (
+                                                            <li key={key} className='ml-6 mb-2 list-disc text-sm sm:text-base md:text-lg'>
+                                                                <a
+                                                                    href={source.url}
+                                                                    target='_blank'
+                                                                    rel='noopener noreferrer'
+                                                                    className='text-blue-600 hover:text-blue-800 underline'>
+                                                                    {source.title || source.url}
+                                                                </a>
+                                                            </li>
+                                                        );
+                                                    }
+                                                    return null;
+                                                });
+                                        })()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Back to Blogs Button */}
                     <div className='text-center mt-8'>
                         <Link

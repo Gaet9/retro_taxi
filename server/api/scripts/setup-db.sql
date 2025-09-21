@@ -20,6 +20,7 @@ CREATE TABLE Users (
     password TEXT NOT NULL,
     role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
     newsletter BOOLEAN DEFAULT FALSE,
+    adminRequest BOOLEAN DEFAULT FALSE,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -28,6 +29,7 @@ CREATE TABLE Blogs (
     id SERIAL PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     content TEXT NOT NULL,
+    sources TEXT, -- Store sources separately as JSON array
     category TEXT,
     model TEXT,
     brand TEXT,

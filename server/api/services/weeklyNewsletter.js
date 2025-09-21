@@ -2,6 +2,9 @@ const cron = require("node-cron");
 const { create_newsletter, send_newsletter } = require("../db/newsQueries");
 const pool = require("../db/dbconn");
 
+// Check if we're in test/development mode
+const isTestMode = process.env.NODE_ENV === "test" || process.env.NODE_ENV === "development";
+
 let authToken = null;
 let isGenerating = false;
 let isSending = false;
@@ -92,7 +95,12 @@ async function generateNewsletter() {
             }),
         };
 
-        await create_newsletter(mockReq, mockRes);
+        if (isTestMode) {
+            console.log("🧪 Test mode: Skipping actual newsletter creation");
+            mockRes.json({ success: true, message: "Newsletter creation skipped in test mode" });
+        } else {
+            await create_newsletter(mockReq, mockRes);
+        }
     } catch (error) {
         console.error("❌ Error creating newsletter:", error);
     } finally {
@@ -126,8 +134,13 @@ async function sendNewsletter() {
             }),
         };
 
-        // Call send_newsletter once - it handles all subscribers internally
-        await send_newsletter(mockReq, mockRes);
+        if (isTestMode) {
+            console.log("🧪 Test mode: Skipping actual newsletter sending");
+            mockRes.json({ success: true, message: "Newsletter sending skipped in test mode" });
+        } else {
+            // Call send_newsletter once - it handles all subscribers internally
+            await send_newsletter(mockReq, mockRes);
+        }
 
         console.log("✅ Newsletter sending completed");
     } catch (error) {
@@ -139,6 +152,11 @@ async function sendNewsletter() {
 
 // Start the weekly schedule
 function start() {
+    if (isTestMode) {
+        console.log("🧪 Test mode: Newsletter service disabled");
+        return;
+    }
+
     console.log("Starting weekly newsletter service...");
 
     // Reset daily flags every minute to catch midnight

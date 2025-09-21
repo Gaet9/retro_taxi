@@ -93,11 +93,18 @@ const blog_details = (req, res) => {
 // Middleware to update a specific blog by id
 const blog_update = async (req, res) => {
     const { id } = req.params; // Good practice to write like this, many parameters can be passe between {}, like { id, name, email }
-    const { title, content, category, model, brand, image_url, user_id, status, last_updated } = req.body; // to be written in body section as a JSON file in Postman to test
+    const { title, content, sources, category, model, brand, image_url, user_id, status, last_updated } = req.body; // Added sources parameter
+
+    // Handle sources - convert to JSON string if it's an array
+    let sourcesJson = null;
+    if (sources) {
+        sourcesJson = Array.isArray(sources) ? JSON.stringify(sources) : sources;
+    }
+
     const result = pool
         .query(
-            "UPDATE blogs SET title = $1, content = $2, category = $3, model = $4, brand = $5, image_url = $6, user_id = $7, status = $8, last_updated = $9 WHERE id = $10 RETURNING *",
-            [title, content, category, model, brand, image_url, user_id, status, last_updated, id]
+            "UPDATE blogs SET title = $1, content = $2, sources = $3, category = $4, model = $5, brand = $6, image_url = $7, user_id = $8, status = $9, last_updated = $10 WHERE id = $11 RETURNING *",
+            [title, content, sourcesJson, category, model, brand, image_url, user_id, status, last_updated, id]
         )
         .then((result) => {
             if (result.rows.length === 0) {
@@ -131,13 +138,20 @@ const blog_update = async (req, res) => {
 // Middleware to create a blog, POST request
 const blog_create_post = (req, res) => {
     // here we want to save data from the form, first we need to access it (l. 23)
-    const { title, content, category, model, brand, image_url, user_id, status } = req.body; // to be written in body section as a JSON file in Postman to test
+    const { title, content, sources, category, model, brand, image_url, user_id, status } = req.body; // Added sources parameter
     const result = pool;
     console.log("Creating blog with data:", req.body);
+
+    // Handle sources - convert to JSON string if it's an array
+    let sourcesJson = null;
+    if (sources) {
+        sourcesJson = Array.isArray(sources) ? JSON.stringify(sources) : sources;
+    }
+
     result
         .query(
-            "INSERT INTO blogs (title, content, category, model, brand, image_url, user_id, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-            [title, content, category, model, brand, image_url, user_id, status]
+            "INSERT INTO blogs (title, content, sources, category, model, brand, image_url, user_id, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
+            [title, content, sourcesJson, category, model, brand, image_url, user_id, status]
         )
         .then((result) =>
             res.status(201).json({
