@@ -93,6 +93,21 @@ export const Navigation = ({ color = "text-purple-950" }) => {
                         }>
                         Contact
                     </NavLink>
+                    <NavLink
+                        to='/map'
+                        title='map'
+                        id='mapnav-btn-id'
+                        className={({ isActive }) =>
+                            `mx-1 sm:mx-3 lg:mx-5 p-1 sm:p-3 lg:p-5 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl 
+                                                transition-all duration-200 ease-in-out
+                                                ${
+                                                    isActive
+                                                        ? `bg-purple-950 text-butter border-2 border-butter`
+                                                        : "hover:bg-purple-400 hover:rounded-xl"
+                                                }`
+                        }>
+                        Map
+                    </NavLink>
                 </div>
             </div>
             {/* This part depend on user isLoggedIn and Role */}

@@ -31,6 +31,11 @@ const create_newsletter = async (req, res) => {
                         Write a weekly newsletter article about the latest developments in autonomous vehicles and robotaxis worldwide. 
                         Focus on the latest news from the past week, research on : the major companies in this industry (Tesla, Waymo, Cruise, Baidu, Zoox, Pony.ai, Mobileye, etc.), 
                         key countries where the industry is advanced or emerging, important technological breakthroughs, and regulatory updates.
+                        RESEARCH REQUIREMENTS: 
+                        - Consult at least 5 different credible sources (news articles, press releases, official company announcements, or industry reports)
+                        - Cross-reference facts and verify information accuracy across multiple sources
+                        - Quote and cite these sources in the sources section with proper attribution
+                        - Compare data from multiple sources to identify trends, contradictions, or consensus views 
                         The article must be professionally structured, concise, and clear, and formatted strictly as valid JSON using this exact schema:
 
                         {
@@ -64,6 +69,9 @@ const create_newsletter = async (req, res) => {
                                 ]
                             },
                             "sources": [
+                                "<a href='URL'>Source Title</a>",
+                                "<a href='URL'>Source Title</a>",
+                                "<a href='URL'>Source Title</a>",
                                 "<a href='URL'>Source Title</a>",
                                 "<a href='URL'>Source Title</a>"
                             ]

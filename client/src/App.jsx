@@ -16,6 +16,7 @@ import { SignUp } from "./pages/SignUp";
 import { ProtectedRoutes } from "./pages/ProtectedRoutes";
 import { PrivateRoutes } from "./pages/PrivateRoutes";
 import { Profile } from "./pages/Profile";
+import { MapSection } from "./pages/MapSection";
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                 <Route path='blogs' element={<Blogs />} />
                 <Route path='about' element={<About />} />
                 <Route path='contact' element={<Contact />} />
+                <Route path='map' element={<MapSection />} />
                 <Route path='login' element={<Login />} />
                 <Route path='sign-up' element={<SignUp />} />
                 <Route path='profile' element={<Profile />} />
