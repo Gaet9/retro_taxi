@@ -10,7 +10,7 @@ const Notification = ({ message, type, visible, onClose }) => {
     }, [visible, onClose]);
 
     const base =
-        "racing-font fixed bottom-5 right-5 px-5 py-3 border-l-8 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl text-butter text-3xl shadow-xl z-50 transition-transform duration-500 ease-in-out";
+        "racing-font fixed bottom-5 right-5 px-5 py-3 border-l-8 rounded-bl-2xl rounded-tr-2xl rounded-br-3xl text-butter text-3xl shadow-xl z-[99999] transition-transform duration-500 ease-in-out";
     const colors = {
         success: "bg-gray-600 border-green-600 shadow-green-600",
         error: "bg-gray-600 border-red-600 shadow-red-600",
@@ -30,13 +30,8 @@ export const useNotification = () => {
         type: "",
     });
 
-    const showNotification = (message, type) => {
-        setState({ visible: true, message, type });
-    };
-
-    const hideNotification = () => {
-        setState({ ...state, visible: false });
-    };
+    const showNotification = (message, type) => setState({ visible: true, message, type });
+    const hideNotification = () => setState((s) => ({ ...s, visible: false }));
 
     const NotificationElement = (
         <Notification visible={state.visible} message={state.message} type={state.type} onClose={hideNotification} />
@@ -44,3 +39,5 @@ export const useNotification = () => {
 
     return [NotificationElement, showNotification];
 };
+
+export default Notification;
