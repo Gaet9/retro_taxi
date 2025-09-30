@@ -3,11 +3,37 @@ const app = require("../index");
 const pool = require("../db/dbconn.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { Resend } = require("resend");
 require("dotenv").config({ path: ".env.test" }); // to charge .env.test instead of default .env
+
+// Mock the entire Resend module to prevent real emails
+jest.mock("resend", () => ({
+    Resend: jest.fn().mockImplementation(() => ({
+        emails: {
+            send: jest.fn().mockResolvedValue({ data: { id: "test-email-id" } }),
+        },
+    })),
+}));
 
 // login to test private routes with admin role
 let authToken;
 beforeAll(async () => {
+    // Mock the database query for login
+    jest.spyOn(pool, "query").mockResolvedValueOnce({
+        rows: [
+            {
+                id: 1,
+                name: "Test Admin",
+                email: process.env.TEST_EMAIL,
+                password: "hashed_password",
+                role: "admin",
+            },
+        ],
+    });
+
+    // Mock bcrypt.compare to return true for login
+    jest.spyOn(bcrypt, "compare").mockResolvedValue(true);
+
     const loginResponse = await request(app).post("/api/auth/login").send({
         email: process.env.TEST_EMAIL,
         password: process.env.TEST_PWD,

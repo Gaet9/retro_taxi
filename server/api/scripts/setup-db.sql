@@ -61,3 +61,16 @@ CREATE TABLE newsletters (
     created_at TIMESTAMPTZ DEFAULT CURRENT_DATE
 );
 
+-- Create table to store zone data
+CREATE TABLE zones (
+    id SERIAL PRIMARY KEY,
+    company TEXT NOT NULL,
+    city TEXT,
+    country TEXT,
+    operational_model TEXT DEFAULT 'Human-monitored' CHECK (operational_model IN ('Driverless (Geofenced L4)', 'Human-monitored', 'Remote-assist')),
+    service_status TEXT DEFAULT 'Testing' CHECK (service_status IN ('Testing', 'Pilot', 'Limited', 'Available', 'Suspended')),
+    fleet_size INT,
+    coordinates TEXT, -- Store the complete GeoJSON feature
+    created_at TIMESTAMPTZ DEFAULT CURRENT_DATE,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_DATE
+);

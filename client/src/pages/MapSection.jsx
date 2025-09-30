@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON } from "react-leaflet";
 import L from "leaflet";
-import waymoLogo from "../assets/Logos/waymo.svg";
-import teslaLogo from "../assets/Logos/Tesla.svg";
+import { IMAGES } from "../config/images";
+
 import { Header } from "../components/Header";
 import { Navigation } from "../components/Navigation";
 import { Footer } from "../components/Footer";
@@ -25,6 +25,15 @@ import {
 } from "../components/ui/alert-dialog";
 
 // Provider styling helpers
+const PROVIDERS = [
+    { name: "Waymo", color: "#00E89D", logoKey: "Waymo", aliases: ["waymo", "google"] },
+    { name: "Tesla", color: "#E82127", logoKey: "Tesla", aliases: ["tesla"] },
+    { name: "Cruise", color: "#FF4C3F", logoKey: "Cruise", aliases: ["cruise", "gm", "general motors"] },
+    { name: "Zoox", color: "#000000", logoKey: "Zoox", aliases: ["zoox", "amazon"] },
+    { name: "Baidu", color: "#2830E1", logoKey: "Baidu", aliases: ["baidu", "apollogo"] },
+    { name: "Pony.ai", color: "#97DBE5", logoKey: "Ponyai", aliases: ["ponyai"] },
+    { name: "WeRide", color: "#00C8C8", logoKey: "WeRide", aliases: ["weride"] },
+];
 const getDeterministicColor = (input) => {
     const str = String(input || "");
     let hash = 0;
@@ -37,15 +46,28 @@ const getDeterministicColor = (input) => {
 };
 
 const getProviderStyle = (providerName) => {
-    const name = String(providerName || "");
-    const lower = name.toLowerCase();
-    if (lower.includes("waymo")) {
-        return { color: "#03e89e", logo: waymoLogo, providerName: "Waymo" };
+    const original = String(providerName || "");
+    const lower = original.toLowerCase();
+
+    for (const p of PROVIDERS) {
+        if (p.aliases.some((alias) => lower.includes(alias))) {
+            return {
+                color: p.color,
+                logo: IMAGES.PROVIDER_LOGOS[p.logoKey],
+                providerName: p.name,
+            };
+        }
     }
-    if (lower.includes("tesla")) {
-        return { color: "#CC0000", logo: teslaLogo, providerName: "Tesla" };
+
+    return { color: getDeterministicColor(original), logo: null, providerName: original || "Provider" };
+};
+
+const getProviderColor = (providerName) => {
+    const lower = String(providerName || "").toLowerCase();
+    for (const p of PROVIDERS) {
+        if (p.aliases.some((alias) => lower.includes(alias))) return p.color;
     }
-    return { color: getDeterministicColor(name), logo: null, providerName: name || "Provider" };
+    return getDeterministicColor(providerName);
 };
 
 const getInitials = (name) => {
@@ -103,17 +125,21 @@ const ZoomListener = ({ onZoomChange }) => {
 };
 
 // Helper functions for conditional styling
-const getCompanyStyle = (company) => {
-    const name = String(company || "").toLowerCase();
-    if (name.includes("tesla")) return "text-[#CC0000] font-semibold";
-    if (name.includes("waymo")) return "text-[#03e89e] font-semibold";
-    return "text-purple-900";
-};
+// Deprecated: replaced by getProviderColor and inline style usage in the table
+// const getCompanyStyle = (company) => {
+//     const name = String(company || "").toLowerCase();
+//     if (name.includes("tesla")) return "text-[#E82127] font-semibold";
+//     if (name.includes("waymo")) return "text-[#00E89D] font-semibold";
+//     return "text-purple-900";
+// };
 
 const getCountryStyle = (country) => {
     const name = String(country || "").toLowerCase();
     if (name.includes("usa") || name.includes("united states")) return "text-blue-600 font-medium";
     if (name.includes("china")) return "text-red-600 font-medium";
+    if (name.includes("europe")) return "text-green-600 font-medium";
+    if (name.includes("middle east")) return "text-purple-600 font-medium";
+    if (name.includes("japan")) return "text-yellow-600 font-medium";
     return "text-purple-900";
 };
 
@@ -143,6 +169,7 @@ export const MapSection = () => {
     const [mapZoom, setMapZoom] = useState(4);
     const [userLocation, setUserLocation] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const mapRef = useRef(null);
     const [zones, setZones] = useState([]);
     // Removed legacy single filter in favor of per-column filters
     const [colFilters, setColFilters] = useState({
@@ -459,6 +486,8 @@ export const MapSection = () => {
         );
     };
 
+    // Legacy handleSearch removed; using Leaflet SearchControl instead
+
     return (
         <div className='min-h-screen bg-butter racing-font'>
             <Navigation color='text-purple-950' />
@@ -467,72 +496,56 @@ export const MapSection = () => {
             {/* Main Content Container */}
             <div className='container mx-auto px-6 py-8'>
                 <div className='max-w-7xl mx-auto'>
-                    {/* Controls Section */}
-                    <div className='bg-butter rounded-2xl shadow-lg shadow-purple-950/20 p-6 mb-8'>
-                        <div className='flex flex-wrap items-center justify-between gap-4'>
-                            <div className='flex flex-wrap items-center gap-4'>
-                                <h2 className='text-xl sm:text-2xl font-bold text-purple-900'>
-                                    <i className='fa-solid fa-map-location-dot mr-3'></i>
-                                    LA Service Area
-                                </h2>
-                            </div>
-
-                            <div className='flex flex-wrap items-center gap-3'>
-                                <button
-                                    onClick={getCurrentLocation}
-                                    disabled={isLoading}
-                                    className='inline-flex items-center px-4 py-2 bg-purple-950 text-butter rounded-xl
-                                        hover:bg-purple-800 transform hover:scale-105 transition-all duration-300 ease-out
-                                        disabled:opacity-50 disabled:cursor-not-allowed'>
-                                    {isLoading ? (
-                                        <>
-                                            <i className='fa-solid fa-spinner fa-spin mr-2'></i>
-                                            Locating...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className='fa-solid fa-location-crosshairs mr-2'></i>
-                                            My Location
-                                        </>
-                                    )}
-                                </button>
-
-                                <button
-                                    onClick={() => {
-                                        setMapCenter([35, -100]);
-                                        setMapZoom(4);
-                                        setUserLocation(null);
-                                    }}
-                                    className='inline-flex items-center px-4 py-2 bg-purple-600 text-butter rounded-xl
-                                        hover:bg-purple-700 transform hover:scale-105 transition-all duration-300 ease-out'>
-                                    <i className='fa-solid fa-globe mr-2'></i>
-                                    Reset View
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Map Container */}
-                    <div className='bg-butter rounded-2xl shadow-lg shadow-purple-950/20 overflow-hidden z-1'>
+                    <div className='bg-butter rounded-2xl shadow-lg shadow-purple-950/20 overflow-hidden z-1 relative'>
+                        {/* Control Buttons */}
+                        <div className='absolute top-4 right-4 z-10 flex flex-col gap-2 items-end'>
+                            <button
+                                onClick={getCurrentLocation}
+                                disabled={isLoading}
+                                className='inline-flex items-center px-3 py-2 bg-purple-950 text-butter rounded-lg
+                                        hover:bg-purple-800 transform hover:scale-105 transition-all duration-300 ease-out
+                                        disabled:opacity-50 disabled:cursor-not-allowed text-sm'>
+                                {isLoading ? (
+                                    <>
+                                        <i className='fa-solid fa-spinner fa-spin mr-2'></i>
+                                        Locating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <i className='fa-solid fa-location-crosshairs mr-2'></i>
+                                        My Location
+                                    </>
+                                )}
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    setMapCenter([35, -100]);
+                                    setMapZoom(4);
+                                    setUserLocation(null);
+                                }}
+                                className='inline-flex items-center px-3 py-2 bg-purple-600 text-butter rounded-lg
+                                        hover:bg-purple-700 transform hover:scale-105 transition-all duration-300 ease-out text-sm'>
+                                <i className='fa-solid fa-globe mr-2'></i>
+                                Reset
+                            </button>
+                        </div>
                         <div className='h-96 sm:h-[500px] md:h-[600px] lg:h-[700px]'>
                             <MapContainer
                                 center={mapCenter}
                                 zoom={mapZoom}
                                 style={{ height: "100%", width: "100%" }}
                                 scrollWheelZoom={true}
+                                whenCreated={(m) => (mapRef.current = m)}
                                 className='z-1'>
                                 <MapUpdater center={mapCenter} />
                                 <ZoomListener onZoomChange={setMapZoom} />
-
                                 {/* Tile Layer */}
                                 <TileLayer
                                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                     url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                                 />
-
-                                {/* Service Area Polygon removed */}
-
-                                {/* Waymo logo markers when zoomed out */}
                                 {mapZoom <= 9 &&
                                     zones.map((area) => (
                                         <Marker
@@ -580,7 +593,6 @@ export const MapSection = () => {
                                             </Popup>
                                         </Marker>
                                     ))}
-
                                 {/* Waymo GeoJSON Areas when zoomed in, plus center icon */}
                                 {mapZoom > 9 &&
                                     zones.map((layer) => {
@@ -651,7 +663,6 @@ export const MapSection = () => {
                                             </>
                                         );
                                     })}
-
                                 {/* User Location Marker */}
                                 {userLocation && (
                                     <Marker position={userLocation}>
@@ -689,7 +700,7 @@ export const MapSection = () => {
                                     <input
                                         value={colFilters.country}
                                         onChange={(e) => setColFilters({ ...colFilters, country: e.target.value })}
-                                        placeholder='Country'
+                                        placeholder='Country/Zone'
                                         className='w-full min-w-0 px-3 py-2 rounded-md border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-400 text-xs sm:text-sm'
                                     />
                                 </div>
@@ -718,7 +729,7 @@ export const MapSection = () => {
                                         <th
                                             className='py-2 px-2 cursor-pointer select-none w-24 min-w-[80px]'
                                             onClick={() => handleSort("country")}>
-                                            Country{" "}
+                                            Zone{" "}
                                             <span className='ml-1 text-xs'>
                                                 {sortBy.key === "country" ? (sortBy.dir === "asc" ? "↓" : "↑") : "⇅"}
                                             </span>
@@ -764,26 +775,23 @@ export const MapSection = () => {
                                 <tbody>
                                     {sortedFilteredZones.map((z) => (
                                         <tr key={`row-${z.id}`} className='border-b border-purple-950 align-top'>
-                                            <td className='py-2 px-2 text-xs sm:text-sm w-24 min-w-[80px]'>
+                                            <td className='py-2 px-2 text-md sm:text-lg w-24 min-w-[80px]'>
                                                 {editingId === z.id ? (
                                                     <select
                                                         value={editDrafts.company}
                                                         onChange={(e) => setEditDrafts({ ...editDrafts, company: e.target.value })}
-                                                        className={`w-full px-2 py-1 border rounded text-xs sm:text-sm ${getCompanyStyle(
-                                                            editDrafts.company
-                                                        )}`}>
-                                                        <option value='Tesla' className='text-[#CC0000]'>
-                                                            Tesla
-                                                        </option>
-                                                        <option value='Waymo' className='text-[#03e89e]'>
-                                                            Waymo
-                                                        </option>
+                                                        className='w-full px-2 py-1 border rounded text-xs sm:text-sm'>
+                                                        {PROVIDERS.map((p) => (
+                                                            <option key={p.name} value={p.name} style={{ color: p.color, fontWeight: 600 }}>
+                                                                {p.name}
+                                                            </option>
+                                                        ))}
                                                     </select>
                                                 ) : (
-                                                    <span className={getCompanyStyle(z.company)}>{z.company}</span>
+                                                    <span style={{ color: getProviderColor(z.company), fontWeight: 600 }}>{z.company}</span>
                                                 )}
                                             </td>
-                                            <td className='py-2 px-2 text-xs sm:text-sm w-32 min-w-[120px]'>
+                                            <td className='py-2 px-2 text-md sm:text-lg w-32 min-w-[120px]'>
                                                 {editingId === z.id ? (
                                                     <input
                                                         value={editDrafts.city}
@@ -794,7 +802,7 @@ export const MapSection = () => {
                                                     z.city
                                                 )}
                                             </td>
-                                            <td className='py-2 px-2 text-xs sm:text-sm w-24 min-w-[80px]'>
+                                            <td className='py-2 px-2 text-md sm:text-lg w-24 min-w-[80px]'>
                                                 {editingId === z.id ? (
                                                     <select
                                                         value={editDrafts.country}
@@ -808,12 +816,24 @@ export const MapSection = () => {
                                                         <option value='China' className='text-red-600'>
                                                             China
                                                         </option>
+                                                        <option value='Europe' className='text-green-600'>
+                                                            Europe
+                                                        </option>
+                                                        <option value='Middle East' className='text-purple-600'>
+                                                            Middle East
+                                                        </option>
+                                                        <option value='Japan' className='text-yellow-600'>
+                                                            Japan
+                                                        </option>
+                                                        <option value='Singapore' className='text-cyan-600'>
+                                                            Singapore
+                                                        </option>
                                                     </select>
                                                 ) : (
                                                     <span className={getCountryStyle(z.country)}>{z.country}</span>
                                                 )}
                                             </td>
-                                            <td className='py-2 px-2 text-xs sm:text-sm w-48 min-w-[180px]'>
+                                            <td className='py-2 px-2 text-md sm:text-lg w-48 min-w-[180px]'>
                                                 {editingId === z.id ? (
                                                     <select
                                                         value={editDrafts.operational_model}
@@ -829,8 +849,8 @@ export const MapSection = () => {
                                                         <option value='Driverless (Geofenced L4)' className='text-green-400'>
                                                             Driverless (Geofenced L4)
                                                         </option>
-                                                        <option value='Remote-Assist' className='text-yellow-500'>
-                                                            Remote-Assist
+                                                        <option value='Remote-assist' className='text-yellow-500'>
+                                                            Remote-assist
                                                         </option>
                                                     </select>
                                                 ) : (
@@ -839,7 +859,7 @@ export const MapSection = () => {
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className='py-2 px-2 text-xs sm:text-sm w-32 min-w-[120px]'>
+                                            <td className='py-2 px-2 text-md sm:text-lg w-32 min-w-[120px]'>
                                                 {editingId === z.id ? (
                                                     <select
                                                         value={editDrafts.service_status}
@@ -867,7 +887,7 @@ export const MapSection = () => {
                                                     <span className={getServiceStatusStyle(z.service_status)}>{z.service_status}</span>
                                                 )}
                                             </td>
-                                            <td className='py-2 px-2 text-xs sm:text-sm w-28 min-w-[100px]'>
+                                            <td className='py-2 px-2 text-md sm:text-lg w-28 min-w-[100px]'>
                                                 {editingId === z.id ? (
                                                     <input
                                                         type='number'
@@ -879,7 +899,7 @@ export const MapSection = () => {
                                                     z.fleet_size
                                                 )}
                                             </td>
-                                            <td className='py-2 px-2 text-xs sm:text-sm w-32 min-w-[120px]'>
+                                            <td className='py-2 px-2 text-md sm:text-lg w-32 min-w-[120px]'>
                                                 {z.data ? (
                                                     <span className='text-purple-700 font-medium'>
                                                         {formatAreaForDisplay(calculateArea(z.data))}
@@ -892,7 +912,11 @@ export const MapSection = () => {
                                                 <td className='py-2 px-2 w-32 min-w-[120px]'>
                                                     <label className='w-full px-2 py-1 border rounded text-[12px] hover:cursor-pointer bg-purple-100 hover:bg-purple-200 transition-colors duration-200 flex items-center justify-center'>
                                                         <i className='fa-solid fa-upload mr-2'></i>
-                                                        Upload GeoJSON
+                                                        {editDrafts.coordinates &&
+                                                        typeof editDrafts.coordinates === "string" &&
+                                                        editDrafts.coordinatesName
+                                                            ? editDrafts.coordinatesName
+                                                            : "Upload GeoJSON"}
                                                         <input
                                                             type='file'
                                                             accept='.geojson,application/geo+json,application/json'
@@ -900,7 +924,11 @@ export const MapSection = () => {
                                                                 const file = e.target.files && e.target.files[0];
                                                                 if (!file) return;
                                                                 const text = await file.text();
-                                                                setEditDrafts({ ...editDrafts, coordinates: text });
+                                                                setEditDrafts({
+                                                                    ...editDrafts,
+                                                                    coordinates: text,
+                                                                    coordinatesName: file.name,
+                                                                });
                                                             }}
                                                             className='hidden'
                                                         />
@@ -964,12 +992,19 @@ export const MapSection = () => {
                                     <tfoot>
                                         <tr className='border-t border-purple-200'>
                                             <td className='py-2 px-2'>
-                                                <input
+                                                <select
                                                     value={newDraft.company}
                                                     onChange={(e) => setNewDraft({ ...newDraft, company: e.target.value })}
-                                                    placeholder='Company'
-                                                    className='w-full px-2 py-1 border rounded text-xs sm:text-sm'
-                                                />
+                                                    className='w-full px-2 py-1 border rounded text-xs sm:text-sm'>
+                                                    <option value='' disabled>
+                                                        Select company
+                                                    </option>
+                                                    {PROVIDERS.map((p) => (
+                                                        <option key={p.name} value={p.name} style={{ color: p.color, fontWeight: 600 }}>
+                                                            {p.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
                                             </td>
                                             <td className='py-2 px-2'>
                                                 <input
@@ -980,28 +1015,76 @@ export const MapSection = () => {
                                                 />
                                             </td>
                                             <td className='py-2 px-2'>
-                                                <input
+                                                <select
                                                     value={newDraft.country}
                                                     onChange={(e) => setNewDraft({ ...newDraft, country: e.target.value })}
-                                                    placeholder='Country'
-                                                    className='w-full px-2 py-1 border rounded text-xs sm:text-sm'
-                                                />
+                                                    className='w-full px-2 py-1 border rounded text-xs sm:text-sm'>
+                                                    <option value='' disabled>
+                                                        Select country
+                                                    </option>
+                                                    <option value='USA' className='text-blue-600'>
+                                                        USA
+                                                    </option>
+                                                    <option value='China' className='text-red-600'>
+                                                        China
+                                                    </option>
+                                                    <option value='Europe' className='text-green-600'>
+                                                        Europe
+                                                    </option>
+                                                    <option value='Middle East' className='text-purple-600'>
+                                                        Middle East
+                                                    </option>
+                                                    <option value='Japan' className='text-yellow-600'>
+                                                        Japan
+                                                    </option>
+                                                    <option value='Singapore' className='text-cyan-600'>
+                                                        Singapore
+                                                    </option>
+                                                </select>
                                             </td>
                                             <td className='py-2 px-2'>
-                                                <input
+                                                <select
                                                     value={newDraft.operational_model}
                                                     onChange={(e) => setNewDraft({ ...newDraft, operational_model: e.target.value })}
-                                                    placeholder='Operational model'
-                                                    className='w-full px-2 py-1 border rounded text-xs sm:text-sm'
-                                                />
+                                                    className='w-full px-2 py-1 border rounded text-xs sm:text-sm'>
+                                                    <option value='' disabled>
+                                                        Select operational model
+                                                    </option>
+                                                    <option value='Human-monitored' className='text-red-400'>
+                                                        Human-monitored
+                                                    </option>
+                                                    <option value='Driverless (Geofenced L4)' className='text-green-400'>
+                                                        Driverless (Geofenced L4)
+                                                    </option>
+                                                    <option value='Remote-assist' className='text-yellow-500'>
+                                                        Remote-assist
+                                                    </option>
+                                                </select>
                                             </td>
                                             <td className='py-2 px-2'>
-                                                <input
+                                                <select
                                                     value={newDraft.service_status}
                                                     onChange={(e) => setNewDraft({ ...newDraft, service_status: e.target.value })}
-                                                    placeholder='Service status'
-                                                    className='w-full px-2 py-1 border rounded text-xs sm:text-sm'
-                                                />
+                                                    className='w-full px-2 py-1 border rounded text-xs sm:text-sm'>
+                                                    <option value='' disabled>
+                                                        Select service status
+                                                    </option>
+                                                    <option value='Available' className='text-green-400'>
+                                                        Available
+                                                    </option>
+                                                    <option value='Limited' className='text-yellow-500'>
+                                                        Limited
+                                                    </option>
+                                                    <option value='Suspended' className='text-red-400'>
+                                                        Suspended
+                                                    </option>
+                                                    <option value='Pilot' className='text-purple-400'>
+                                                        Pilot
+                                                    </option>
+                                                    <option value='Testing' className='text-blue-400'>
+                                                        Testing
+                                                    </option>
+                                                </select>
                                             </td>
                                             <td className='py-2 px-2'>
                                                 <input
@@ -1012,18 +1095,22 @@ export const MapSection = () => {
                                                     className='w-full px-2 py-1 border rounded text-xs sm:text-sm'
                                                 />
                                             </td>
-                                            <td className='py-2 px-2'>
-                                                <input
-                                                    type='file'
-                                                    accept='.geojson,application/geo+json,application/json'
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files && e.target.files[0];
-                                                        if (!file) return;
-                                                        const text = await file.text();
-                                                        setNewDraft({ ...newDraft, coordinates: text });
-                                                    }}
-                                                    className='w-full px-2 py-1 border rounded text-[11px] sm:text-[12px]'
-                                                />
+                                            <td className='py-2 px-2 w-32 min-w-[120px]'>
+                                                <label className='w-full px-2 py-1 border rounded text-[12px] hover:cursor-pointer bg-purple-100 hover:bg-purple-200 transition-colors duration-200 flex items-center justify-center'>
+                                                    <i className='fa-solid fa-upload mr-2'></i>
+                                                    {newDraft.coordinatesName ? newDraft.coordinatesName : "Upload GeoJSON"}
+                                                    <input
+                                                        type='file'
+                                                        accept='.geojson,application/geo+json,application/json'
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files && e.target.files[0];
+                                                            if (!file) return;
+                                                            const text = await file.text();
+                                                            setNewDraft({ ...newDraft, coordinates: text, coordinatesName: file.name });
+                                                        }}
+                                                        className='hidden'
+                                                    />
+                                                </label>
                                             </td>
                                             <td className='py-2 px-2'>
                                                 <button

@@ -12,6 +12,7 @@ const userRoutes = require("./routes/userRouter.js");
 const contactRoutes = require("./routes/contactRouter.js");
 const authRoutes = require("./routes/authRouter.js");
 const newsRoutes = require("./routes/newsRouter.js");
+const zoneRoutes = require("./routes/zoneRouter.js");
 
 app.use(express.json()); // To parse JSON bodies so i can access the properties object with body.name for example
 app.use(express.urlencoded({ extended: true })); // to parse URL-encoded bodies, like form submissions
@@ -24,6 +25,7 @@ app.use("/api/users", userRoutes); // This sets the base path for all user route
 app.use("/api/contact", contactRoutes); // This sets the base path for all user routes
 app.use("/api/auth", authRoutes);
 app.use("/api/news", newsRoutes);
+app.use("/api/zones", zoneRoutes); // This sets the base path for all zone routes
 
 // Start the weekly newsletter service only in production
 if (process.env.NODE_ENV === "production") {

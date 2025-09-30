@@ -44,9 +44,6 @@ export const calculateArea = (geojson) => {
  * @returns {string} Formatted area string
  */
 export const formatAreaForDisplay = (areaData) => {
-    if (areaData.squareKilometers >= 1) {
-        return `${areaData.formatted.sqKm} km²`;
-    } else {
-        return `${areaData.formatted.sqM} m²`;
-    }
+    // Always display in square kilometers
+    return `${areaData.formatted.sqKm} km²`;
 };

@@ -8,24 +8,22 @@ const bcrypt = require("bcrypt");
 // user_index, user_details, user_update, user-create_post, user_delete
 
 // GET
-const user_index = (req, res) => {
-    const result = pool
-        .query("SELECT id, name, email, role, newsletter, adminRequest, createdAt FROM users ORDER BY id;") // find all users and sort them by createdAt in descending order
-        .then((result) => {
-            res.status(200).json({
-                success: true,
-                message: "All users retreived successfully",
-                data: result.rows,
-            });
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-                success: false,
-                message: "Failed to retreive users",
-                error: err,
-            });
+const user_index = async (req, res) => {
+    try {
+        const result = await pool.query("SELECT id, name, email, role, newsletter, adminRequest, createdAt FROM users ORDER BY id;");
+        res.status(200).json({
+            success: true,
+            message: "All users retreived successfully",
+            data: result.rows,
         });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            success: false,
+            message: "Failed to retreive users",
+            error: err,
+        });
+    }
 };
 // GET BY ID
 const user_details = (req, res) => {
