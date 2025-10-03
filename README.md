@@ -1,2 +1,103 @@
-# retro-taxi
-blog autonomous taxi automated
+# 📖 Retro Taxi
+
+This app is a automated blog about autonomous vehicles around the world
+It also has a Map page where it displays all areas where autonomous vehicle are or have been available. It misses some companies since I struggle finding precise informations.
+
+---
+
+## ✨ Overview
+
+-   Acts as a virtual media. It's not 100% managed by IA yet but IA features are added slowly.
+-   Areas can be added as admin in the map page. Area must be drawn as GeoJson file first (I use QGIS).
+-   For anyone interested in this niche and who wants to know more.
+
+---
+
+## 🚀 Features
+
+-   Blogs are written with Perplexity
+-   Map is made with leaflet.
+
+---
+
+## ⚙️ Installation
+
+Step-by-step instructions to set up locally:
+
+```bash
+git clone https://github.com/Gaet9/retro-taxi.git
+cd client
+npm install
+cd ../server
+npm install
+```
+
+---
+
+## 🛠️ Usage
+
+Show how to run the project and basic usage examples:
+
+```bash
+cd client/
+npm run dev
+```
+
+## 📂 Project Structure
+
+```
+retro_taxi/
+│── client/
+  │── src/
+    │── api/
+    │── assets/
+    │── components/
+    │── context/
+    │── pages/
+    │── public/
+│── server/
+  │── api/
+    │── assets/
+    │── controllers/
+    │── coverage/
+    │── db/
+    │── middlewares/
+    │── routes/
+    │── scripts/
+    │── services/
+    │── tests/
+    │── index.js/
+│── README.md
+```
+
+---
+
+## 🧪 Testing
+
+How to run unit tests:
+
+```bash
+npm run test
+```
+
+How to run e2e tests (example)
+
+```bash
+node server/api/tests/e2e/signupFlow.e2e.js
+```
+
+---
+
+## 🤝 Contributing
+
+---
+
+## 📜 License
+
+---
+
+## 🙌 Acknowledgements
+
+(Optional: tools, libraries, or people you want to credit)
+
+---
