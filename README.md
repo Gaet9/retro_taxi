@@ -1,12 +1,14 @@
 # 📖 Retro Taxi
 
 This app is a automated blog about autonomous vehicles around the world
+It also has a Map page where it displays all areas where autonomous vehicle are or have been available. It misses some companies since I struggle finding precise informations.
 
 ---
 
 ## ✨ Overview
 
 -   Acts as a virtual media. It's not 100% managed by IA yet but IA features are added slowly.
+-   Areas can be added as admin in the map page. Area must be drawn as GeoJson file first (I use QGIS).
 -   For anyone interested in this niche and who wants to know more.
 
 ---
@@ -14,6 +16,7 @@ This app is a automated blog about autonomous vehicles around the world
 ## 🚀 Features
 
 -   Blogs are written with Perplexity
+-   Map is made with leaflet.
 
 ---
 

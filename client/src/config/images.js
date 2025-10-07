@@ -18,6 +18,17 @@ export const IMAGES = {
         GM: `${S3_BASE_URL}/Cruise.jpg`,
         Baidu: `${S3_BASE_URL}/baidu.jpg`,
     },
+
+    // Provider logos (used on maps and elsewhere)
+    PROVIDER_LOGOS: {
+        Waymo: `${S3_BASE_URL}/logos/waymo.svg`,
+        Tesla: `${S3_BASE_URL}/logos/tesla.svg`,
+        Baidu: `${S3_BASE_URL}/logos/baidu.svg`,
+        Cruise: `${S3_BASE_URL}/logos/cruise.svg`,
+        Ponyai: `${S3_BASE_URL}/logos/ponyai.svg`,
+        WeRide: `${S3_BASE_URL}/logos/weride.svg`,
+        Zoox: `${S3_BASE_URL}/logos/zoox.svg`,
+    },
 };
 
 export default IMAGES;

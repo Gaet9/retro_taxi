@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { fetchUserWithToken } from "../api/users";
 import { logoutApi } from "../api/auth";
-import { useNavigate } from "react-router-dom";
 import { useNotification } from "../components/Notification";
 
 const AuthContext = createContext();
@@ -12,15 +11,24 @@ export const AuthWrapper = ({ children }) => {
     // Include the notification component in the wrapper thereofre in the whole app
     const [NotificationElement, showNotification] = useNotification();
 
-    const navigate = useNavigate();
-
     useEffect(() => {
+        let isMounted = true;
         fetchUserWithToken()
-            .then((data) => setUser({ ...data.data, isLoggedIn: true, isAdmin: data.data.role === "admin" }))
+            .then((data) => {
+                if (!isMounted) return;
+                setUser({ ...data.data, isLoggedIn: true, isAdmin: data.data.role === "admin" });
+            })
             .catch((err) => {
+                if (!isMounted) return;
+                // Silently treat 401 as logged out to avoid noisy console errors
                 setUser({ isLoggedIn: false, isAdmin: false });
-                console.error(err);
+                if (!(err?.response?.status === 401)) {
+                    console.debug("Auth check failed:", err?.message || err);
+                }
             });
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const login = (userData) => {

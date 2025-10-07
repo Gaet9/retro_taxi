@@ -111,7 +111,7 @@ describe("SingleBlog Component", () => {
             </MemoryRouter>
         );
 
-        const link = await screen.findByText("Go back to the blogs page");
+        const link = await screen.findByRole("link", { name: /Back to Blogs/i });
         expect(link).toHaveAttribute("href", "/blogs");
     });
 });

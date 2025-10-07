@@ -86,7 +86,7 @@ describe("UpdateBlog", () => {
             </MemoryRouter>
         );
 
-        const publishBtn = await screen.findByRole("button", { name: /Save and publish/i });
+        const publishBtn = await screen.findByRole("button", { name: /Save \& Publish/i });
         fireEvent.click(publishBtn);
 
         await waitFor(() => {
@@ -128,7 +128,7 @@ describe("UpdateBlog", () => {
             </MemoryRouter>
         );
 
-        const publishBtn = await screen.findByRole("button", { name: /Save and publish/i });
+        const publishBtn = await screen.findByRole("button", { name: /Save \& Publish/i });
         fireEvent.click(publishBtn);
 
         await waitFor(() => {
@@ -145,7 +145,7 @@ describe("UpdateBlog", () => {
             </MemoryRouter>
         );
 
-        expect(await screen.findByText(/Sorry this blog doesn't exist/i)).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: /Go back to the blogs page/i })).toBeInTheDocument();
+        expect(await screen.findByText(/Sorry, this blog doesn't exist/i)).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /Back to Blogs/i })).toBeInTheDocument();
     });
 });
